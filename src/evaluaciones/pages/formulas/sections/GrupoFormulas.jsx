@@ -100,7 +100,7 @@ export default function GrupoFormulas() {
                                         <tr key={f.id + i}>
                                             <td>{f.id}</td>
                                             <td>{f.nameformula}</td>
-                                            <td>{f.weight}</td>
+                                            <td>{f.desc}</td>
                                             <td>
                                                 <Dropdown>
                                                     <Dropdown.Toggle>...</Dropdown.Toggle>
