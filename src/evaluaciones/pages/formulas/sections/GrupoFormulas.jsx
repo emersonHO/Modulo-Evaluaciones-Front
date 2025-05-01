@@ -1,7 +1,9 @@
+// GrupoFormulas.js
 import React, { useState } from "react";
-import { Card, Table, Button, Dropdown, Modal, Form } from "react-bootstrap";
+import { Card, Table, Button, Dropdown } from "react-bootstrap";
+import AddFormula from './addFormula';
 
-const applicables=["usapesos","restamenor","nummenor","restamayor","nummayor","copiaprimero","copiamenor","copiamayor","redondeo"]
+const applicables = ["usapesos", "restamenor", "nummenor", "restamayor", "nummayor", "copiaprimero", "copiamenor", "copiamayor", "redondeo"];
 
 const initialFormulas = [
     {
@@ -34,11 +36,11 @@ export default function GrupoFormulas() {
     const [formulas, setFormulas] = useState(initialFormulas);
     const [showModal, setShowModal] = useState(false);
     const [selectedGroupIndex, setSelectedGroupIndex] = useState(null);
-    const [newformula, setNewformula] = useState({ 
+    const [newformula, setNewformula] = useState({
         id: "",
         nameformula: "",
         desc: "",
-        applicable: applicables.map(()=> 0)
+        applicable: applicables.map(() => 0)
     });
 
     const handleShow = (groupIndex) => {
@@ -48,7 +50,7 @@ export default function GrupoFormulas() {
 
     const handleClose = () => {
         setShowModal(false);
-        setNewformula({ id: "", nameformula: "", desc: "", applicable: applicables.map(()=>0) });
+        setNewformula({ id: "", nameformula: "", desc: "", applicable: applicables.map(() => 0) });
     };
 
     const handleChange = (e) => {
@@ -72,10 +74,10 @@ export default function GrupoFormulas() {
         const nuevos = [...newformula.applicable];
         nuevos[index] = nuevos[index] === 1 ? 0 : 1;
         setNewformula((prev) => ({
-          ...prev,
-          applicable: nuevos
+            ...prev,
+            applicable: nuevos
         }));
-      };
+    };
 
     return (
         <section>
@@ -119,63 +121,15 @@ export default function GrupoFormulas() {
                 ))}
             </div>
 
-            <Modal show={showModal} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Añadir nueva fórmula</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="formId">
-                            <Form.Label>ID</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="id"
-                                value={newformula.id}
-                                onChange={handleChange}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formName">
-                            <Form.Label>Nombre del fórmula</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="nameformula"
-                                value={newformula.nameformula}
-                                onChange={handleChange}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formDesc">
-                            <Form.Label>Insertar descripción</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="desc"
-                                value={newformula.desc}
-                                onChange={handleChange}
-                            />
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Label>Criterios adicionales</Form.Label>
-                            {applicables.map((label, index) => (
-                                <Form.Check
-                                key={index}
-                                type="checkbox"
-                                label={label}
-                                checked={newformula.applicable[index] === 1}
-                                onChange={() => handleCheckboxChange(index)}
-                                className="mb-2"
-                                />
-                            ))}
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Cancelar
-                    </Button>
-                    <Button variant="primary" onClick={handleSave}>
-                        Guardar
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            <AddFormula
+                show={showModal}
+                handleClose={handleClose}
+                handleSave={handleSave}
+                newformula={newformula}
+                handleChange={handleChange}
+                handleCheckboxChange={handleCheckboxChange}
+                applicables={applicables}
+            />
         </section>
     );
 }
