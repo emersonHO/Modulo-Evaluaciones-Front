@@ -2,48 +2,45 @@
 import React, { useState, useEffect } from "react";
 import { Card, Table, Button, Dropdown } from "react-bootstrap";
 import AddFormula from './addFormula';
+import DeleteFormula from './deleteFormula'
 import axios from "axios";
 
 const applicables = ["usapesos", "restamenor", "nummenor", "restamayor", "nummayor", "copiaprimero", "copiamenor", "copiamayor", "redondeo"];
 
 export default function GrupoFormulas() {
-    const [formulas, setFormulas] = useState([]);
-    const [showModal, setShowModal] = useState(false);
-    const [selectedGroupIndex, setSelectedGroupIndex] = useState(null);
+    const [formulas, setFormulas] = useState({
+        name: "Grupo de fórmulas",
+        formula: []
+    });
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [deleteId, setDeleteId]= useState(null);
+    const [showDeleteModal, setShowDeleteModal]= useState(false);
     const [newformula, setNewformula] = useState({
         codigo: "",
         desc: "",
         applicable: applicables.map(() => 0)
     });
-    const [showConfirm, setShowConfirm] = useState(false);
-    const [idToDelete, setIdToDelete] = useState(null);
 
     useEffect(() => {
         axios.get("http://localhost:8080/api/formula")
             .then(res => {
-                setFormulas([
-                    {
-                        name: "Grupo de fórmulas",
-                        formula: res.data.map(f => ({
-                            id: f.id,
-                            codigo: f.codigo,
-                            desc: f.descripcion,
-                            estado: f.estado
-                        }))
-                    }
-                ]);
+                setFormulas({
+                    name: "Grupo de fórmulas",
+                    formula: res.data.map(f => ({
+                        id: f.id,
+                        codigo: f.codigo,
+                        desc: f.descripcion,
+                        estado: f.estado
+                    }))
+                });
             })
             .catch(err => console.error("Error cargando fórmulas:", err));
     }, []);
 
-    const handleShow = (groupIndex) => {
-        setSelectedGroupIndex(groupIndex);
-        setShowModal(true);
-    };
-
-    const handleClose = () => {
-        setShowModal(false);
-        setNewformula({ id: "", nameformula: "", desc: "", applicable: applicables.map(() => 0) });
+    const handleAddShow = () => setShowAddModal(true);
+    const handleAddClose = () => {
+        setShowAddModal(false);
+        setNewformula({ codigo: "", desc: "", applicable: applicables.map(() => 0) });
     };
 
     const handleChange = (e) => {
@@ -74,17 +71,19 @@ export default function GrupoFormulas() {
             copiaMayor: newformula.applicable[7] ? 1 : 0,
             redondeo: newformula.applicable[8] ? 1 : 0
         };
-        console.log("Enviando fórmula:", payload);
+
         axios.post("http://localhost:8080/api/formula", payload)
             .then(res => {
-                const updated = [...formulas];
-                updated[selectedGroupIndex].formula.push({
-                    id: res.data.id,
-                    nameformula: res.data.codigo,
-                    desc: res.data.descripcion
-                });
-                setFormulas(updated);
-                handleClose();
+                setFormulas(prev => ({
+                    ...prev,
+                    formula: [...prev.formula, {
+                        id: res.data.id,
+                        codigo: res.data.codigo,
+                        desc: res.data.descripcion,
+                        estado: res.data.estado
+                    }]
+                }));
+                handleAddClose();
             })
             .catch(err => {
                 console.error("Error al guardar fórmula:", err);
@@ -100,81 +99,92 @@ export default function GrupoFormulas() {
         }));
     };
 
-    const handleDelete=(id)=>{
+    const handleDeleteShow=(id) => {
+        setDeleteId(id);
+        setShowDeleteModal(true);
+    };
+    const handleDeleteClose = () => {
+        setDeleteId(null);
+        setShowDeleteModal(false);
+    };
+
+
+    const handleDelete = (id) => {
         axios.delete(`http://localhost:8080/api/formula/${id}`)
-        .then(res => {
-            const updated = formulas.map(group => ({
-                ...group,
-                formula: group.formula.filter(f => f.id !== id)
-            }));
-            setFormulas(updated);
-        })
-        .catch(err => {
-            console.error("Error al eliminar fórmula:", err);
-        });
-    }
+            .then(() => {
+                setFormulas(prev => ({
+                    ...prev,
+                    formula: prev.formula.filter(f => f.id !== id)
+                }));
+                handleDeleteClose()
+            })
+            .catch(err => {
+                console.error("Error al eliminar fórmula:", err);
+            });
+    };
 
     return (
         <section>
-            <div>
-                {formulas.map((item, groupIndex) => (
-                    <Card className="m-4 p-2" key={groupIndex}>
-                        <Card.Title>{item.name}</Card.Title>
-                        <Card.Body>
-                            <Table>
-                                <thead>
-                                    <tr className="text-center">
-                                        <th>Codigo</th>
-                                        <th>Descripción de la fórmula</th>
-                                        <th>Estado de la fórmula</th>
-                                        <th>Opciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="text-center">
-                                    {item.formula.map((f, i) => (
-                                        <tr key={f.id + i}>
-                                            <td>{f.codigo}</td>
-                                            <td>{f.desc}</td>
-                                            <td>
-                                                <span className={
-                                                    f.estado === "1"
-                                                        ? "badge bg-success"
-                                                        : f.estado === "2"
-                                                        ? "badge bg-danger"
-                                                        : "badge bg-secondary"
-                                                }>
-                                                    {f.estado === "1" ? "Activo" : f.estado === "2" ? "Suspendido" : f.estado}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <Dropdown>
-                                                    <Dropdown.Toggle>...</Dropdown.Toggle>
-                                                    <Dropdown.Menu>
-                                                        <Dropdown.Item>Ver fórmula</Dropdown.Item>
-                                                        <Dropdown.Item>Editar fórmula</Dropdown.Item>
-                                                        <Dropdown.Item onClick={()=>handleDelete(f.id)}>Eliminar fórmula</Dropdown.Item>
-                                                    </Dropdown.Menu>
-                                                </Dropdown>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
-                            <Button onClick={() => handleShow(groupIndex)}>Añadir fórmula</Button>
-                        </Card.Body>
-                    </Card>
-                ))}
-            </div>
+            <Card className="m-4 p-2">
+                <Card.Title>{formulas.name}</Card.Title>
+                <Card.Body>
+                    <Table>
+                        <thead>
+                            <tr className="text-center">
+                                <th>Codigo</th>
+                                <th>Descripción de la fórmula</th>
+                                <th>Estado de la fórmula</th>
+                                <th>Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody className="text-center">
+                            {formulas.formula.map((f, i) => (
+                                <tr key={f.id + i}>
+                                    <td>{f.codigo}</td>
+                                    <td>{f.desc}</td>
+                                    <td>
+                                        <span className={
+                                            f.estado === "1"
+                                                ? "badge bg-success"
+                                                : f.estado === "2"
+                                                    ? "badge bg-danger"
+                                                    : "badge bg-secondary"
+                                        }>
+                                            {f.estado === "1" ? "Activo" : f.estado === "2" ? "Suspendido" : f.estado}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <Dropdown>
+                                            <Dropdown.Toggle>...</Dropdown.Toggle>
+                                            <Dropdown.Menu>
+                                                <Dropdown.Item>Ver fórmula</Dropdown.Item>
+                                                <Dropdown.Item>Editar fórmula</Dropdown.Item>
+                                                <Dropdown.Item onClick={() => handleDeleteShow(f.id)}>Eliminar fórmula</Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                    <Button onClick={handleAddShow}>Añadir fórmula</Button>
+                </Card.Body>
+            </Card>
 
             <AddFormula
-                show={showModal}
-                handleClose={handleClose}
+                show={showAddModal}
+                handleClose={handleAddClose}
                 handleSave={handleSave}
                 newformula={newformula}
                 handleChange={handleChange}
                 handleCheckboxChange={handleCheckboxChange}
                 applicables={applicables}
             />
+            <DeleteFormula
+                show={showDeleteModal}
+                handleClose={handleDeleteClose}
+                handleDelete={()=>handleDelete(deleteId)}
+                />
         </section>
     );
 }
