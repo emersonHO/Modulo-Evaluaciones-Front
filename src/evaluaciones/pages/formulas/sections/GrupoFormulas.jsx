@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Card, Table, Button, Dropdown } from "react-bootstrap";
 import AddFormula from './addFormula';
 import DeleteFormula from './deleteFormula'
+import ViewFormula from "./viewFormula";
 import axios from "axios";
 
 const applicables = ["usapesos", "restamenor", "nummenor", "restamayor", "nummayor", "copiaprimero", "copiamenor", "copiamayor", "redondeo"];
@@ -15,9 +16,17 @@ export default function GrupoFormulas() {
     const [showAddModal, setShowAddModal] = useState(false);
     const [deleteId, setDeleteId]= useState(null);
     const [showDeleteModal, setShowDeleteModal]= useState(false);
+    const [showViewer, setShowViewer]= useState(false);
+    const [selectedFormula, setSelectedFormula] = useState(null);
     const [newformula, setNewformula] = useState({
         codigo: "",
-        desc: "",
+        descripcion: "",
+        formula: "asd",
+        funcionId: 1,
+        estado: "1",
+        institucionId: 1,
+        institutoId: 1,
+        departamentoId: 1,
         applicable: applicables.map(() => 0)
     });
 
@@ -29,8 +38,22 @@ export default function GrupoFormulas() {
                     formula: res.data.map(f => ({
                         id: f.id,
                         codigo: f.codigo,
-                        desc: f.descripcion,
-                        estado: f.estado
+                        descripcion: f.descripcion,
+                        formula: f.formula,
+                        estado: f.estado,
+                        usaPesos: f.usaPesos,
+                        restaMenor: f.restaMenor,
+                        numMenor: f.numMenor,
+                        restaMayor: f.restaMayor,
+                        numMayor: f.numMayor,
+                        copiaPrimero: f.copiaPrimero,
+                        copiaMenor: f.copiaMenor,
+                        copiaMayor: f.copiaMayor,
+                        redondeo: f.redondeo,
+                        institucionId: f.institucionId,
+                        departamentoId: f.departamentoId,
+                        funcionId: f.funcionId,
+                        institutoId: f.institutoId
                     }))
                 });
             })
@@ -40,7 +63,7 @@ export default function GrupoFormulas() {
     const handleAddShow = () => setShowAddModal(true);
     const handleAddClose = () => {
         setShowAddModal(false);
-        setNewformula({ codigo: "", desc: "", applicable: applicables.map(() => 0) });
+        setNewformula({ codigo: "", descripcion: "", applicable: applicables.map(() => 0) });
     };
 
     const handleChange = (e) => {
@@ -54,13 +77,13 @@ export default function GrupoFormulas() {
     const handleSave = () => {
         const payload = {
             codigo: newformula.codigo,
-            descripcion: newformula.desc,
-            formula: "asd",
-            funcionId: 1,
-            estado: "1",
-            institucionId: 1,
-            departamentoId: 1,
-            institutoId: 1,
+            descripcion: newformula.descripcion,
+            formula: newformula.formula,
+            funcionId: newformula.funcionId,
+            estado: newformula.estado,
+            institucionId: newformula.institucionId,
+            departamentoId: newformula.departamentoId,
+            institutoId: newformula.institutoId,
             usaPesos: newformula.applicable[0] ? 1 : 0,
             restaMenor: newformula.applicable[1] ? 1 : 0,
             numMenor: newformula.applicable[2] ? 1 : 0,
@@ -79,7 +102,7 @@ export default function GrupoFormulas() {
                     formula: [...prev.formula, {
                         id: res.data.id,
                         codigo: res.data.codigo,
-                        desc: res.data.descripcion,
+                        descripcion: res.data.descripcion,
                         estado: res.data.estado
                     }]
                 }));
@@ -106,6 +129,16 @@ export default function GrupoFormulas() {
     const handleDeleteClose = () => {
         setDeleteId(null);
         setShowDeleteModal(false);
+    };
+
+    const handleViewFormula = (formula) => {
+        setSelectedFormula(formula);
+        setShowViewer(true);
+    };
+    
+    const handleCloseViewer = () => {
+        setShowViewer(false);
+        setSelectedFormula(null);
     };
 
 
@@ -139,9 +172,9 @@ export default function GrupoFormulas() {
                         </thead>
                         <tbody className="text-center">
                             {formulas.formula.map((f, i) => (
-                                <tr key={f.id + i}>
+                                <tr key={f.id}>
                                     <td>{f.codigo}</td>
-                                    <td>{f.desc}</td>
+                                    <td>{f.descripcion}</td>
                                     <td>
                                         <span className={
                                             f.estado === "1"
@@ -157,8 +190,7 @@ export default function GrupoFormulas() {
                                         <Dropdown>
                                             <Dropdown.Toggle>...</Dropdown.Toggle>
                                             <Dropdown.Menu>
-                                                <Dropdown.Item>Ver fórmula</Dropdown.Item>
-                                                <Dropdown.Item>Editar fórmula</Dropdown.Item>
+                                                <Dropdown.Item onClick={() => handleViewFormula(f)}>Ver fórmula</Dropdown.Item>
                                                 <Dropdown.Item onClick={() => handleDeleteShow(f.id)}>Eliminar fórmula</Dropdown.Item>
                                             </Dropdown.Menu>
                                         </Dropdown>
@@ -184,7 +216,12 @@ export default function GrupoFormulas() {
                 show={showDeleteModal}
                 handleClose={handleDeleteClose}
                 handleDelete={()=>handleDelete(deleteId)}
-                />
+            />
+            <ViewFormula
+                show={showViewer}
+                handleClose={handleCloseViewer}
+                formula={selectedFormula}
+            />
         </section>
     );
 }
