@@ -16,6 +16,7 @@
     "@mui/material": "^6.0.2",
     "@reduxjs/toolkit": "^2.2.7",
     "@toolpad/core": "^0.6.0",
+    "axios": "^1.9.0",
     "ayudadocenteweb": "file:",
     "bootstrap": "^5.3.5",
     "emotion": "^11.0.0",

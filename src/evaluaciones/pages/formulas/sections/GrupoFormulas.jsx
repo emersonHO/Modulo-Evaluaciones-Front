@@ -1,47 +1,36 @@
 // GrupoFormulas.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Table, Button, Dropdown } from "react-bootstrap";
 import AddFormula from './addFormula';
+import axios from "axios";
 
 const applicables = ["usapesos", "restamenor", "nummenor", "restamayor", "nummayor", "copiaprimero", "copiamenor", "copiamayor", "redondeo"];
 
-const initialFormulas = [
-    {
-        name: "Grupo de formulas 1",
-        formula: [
-            { id: "asd", nameformula: "asd", desc: "0.2" },
-            { id: "qwe", nameformula: "qwe", desc: "0.3" },
-            { id: "zxc", nameformula: "zxc", desc: "0.4" },
-        ]
-    },
-    {
-        name: "Grupo de formulas 2",
-        formula: [
-            { id: "asd", nameformula: "asd", desc: "0.2" },
-            { id: "qwe", nameformula: "qwe", desc: "0.3" },
-            { id: "zxc", nameformula: "zxc", desc: "0.4" },
-        ]
-    },
-    {
-        name: "Grupo de formulas 3",
-        formula: [
-            { id: "asd", nameformula: "asd", desc: "0.2" },
-            { id: "qwe", nameformula: "qwe", desc: "0.3" },
-            { id: "zxc", nameformula: "zxc", desc: "0.4" },
-        ]
-    }
-];
-
 export default function GrupoFormulas() {
-    const [formulas, setFormulas] = useState(initialFormulas);
+    const [formulas, setFormulas] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedGroupIndex, setSelectedGroupIndex] = useState(null);
     const [newformula, setNewformula] = useState({
-        id: "",
-        nameformula: "",
+        codigo: "",
         desc: "",
         applicable: applicables.map(() => 0)
     });
+
+    useEffect(() => {
+        axios.get("http://localhost:8080/api/formula")
+            .then(res => {
+                setFormulas([
+                    {
+                        name: "Grupo de fórmulas",
+                        formula: res.data.map(f => ({
+                            codigo: f.codigo,
+                            desc: f.descripcion
+                        }))
+                    }
+                ]);
+            })
+            .catch(err => console.error("Error cargando fórmulas:", err));
+    }, []);
 
     const handleShow = (groupIndex) => {
         setSelectedGroupIndex(groupIndex);
@@ -62,12 +51,40 @@ export default function GrupoFormulas() {
     };
 
     const handleSave = () => {
-        if (selectedGroupIndex !== null) {
-            const updatedFormulas = [...formulas];
-            updatedFormulas[selectedGroupIndex].formula.push(newformula);
-            setFormulas(updatedFormulas);
-        }
-        handleClose();
+        const payload = {
+            codigo: newformula.codigo,
+            descripcion: newformula.desc,
+            formula: "asd",
+            funcionId: 1,
+            estado: "1",
+            institucionId: 1,
+            departamentoId: 1,
+            institutoId: 1,
+            usaPesos: newformula.applicable[0] ? 1 : 0,
+            restaMenor: newformula.applicable[1] ? 1 : 0,
+            numMenor: newformula.applicable[2] ? 1 : 0,
+            restaMayor: newformula.applicable[3] ? 1 : 0,
+            numMayor: newformula.applicable[4] ? 1 : 0,
+            copiaPrimero: newformula.applicable[5] ? 1 : 0,
+            copiaMenor: newformula.applicable[6] ? 1 : 0,
+            copiaMayor: newformula.applicable[7] ? 1 : 0,
+            redondeo: newformula.applicable[8] ? 1 : 0
+        };
+        console.log("Enviando fórmula:", payload);
+        axios.post("http://localhost:8080/api/formula", payload)
+            .then(res => {
+                const updated = [...formulas];
+                updated[selectedGroupIndex].formula.push({
+                    id: res.data.id,
+                    nameformula: res.data.codigo,
+                    desc: res.data.descripcion
+                });
+                setFormulas(updated);
+                handleClose();
+            })
+            .catch(err => {
+                console.error("Error al guardar fórmula:", err);
+            });
     };
 
     const handleCheckboxChange = (index) => {
@@ -89,8 +106,7 @@ export default function GrupoFormulas() {
                             <Table>
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Nombre de la fórmula</th>
+                                        <th>Codigo</th>
                                         <th>Descripción de la fórmula</th>
                                         <th></th>
                                     </tr>
@@ -98,8 +114,7 @@ export default function GrupoFormulas() {
                                 <tbody>
                                     {item.formula.map((f, i) => (
                                         <tr key={f.id + i}>
-                                            <td>{f.id}</td>
-                                            <td>{f.nameformula}</td>
+                                            <td>{f.codigo}</td>
                                             <td>{f.desc}</td>
                                             <td>
                                                 <Dropdown>

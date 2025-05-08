@@ -9,21 +9,12 @@ const AddFormula = ({ show, handleClose, handleSave, newformula, handleChange, h
             </Modal.Header>
             <Modal.Body>
                 <Form>
-                    <Form.Group controlId="formId">
-                        <Form.Label>ID</Form.Label>
+                    <Form.Group controlId="formCode">
+                        <Form.Label>Código</Form.Label>
                         <Form.Control
                             type="text"
-                            name="id"
-                            value={newformula.id}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="formName">
-                        <Form.Label>Nombre del fórmula</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="nameformula"
-                            value={newformula.nameformula}
+                            name="codigo"
+                            value={newformula.codigo}
                             onChange={handleChange}
                         />
                     </Form.Group>
