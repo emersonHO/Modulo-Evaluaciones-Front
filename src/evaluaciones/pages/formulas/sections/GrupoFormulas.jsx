@@ -15,6 +15,8 @@ export default function GrupoFormulas() {
         desc: "",
         applicable: applicables.map(() => 0)
     });
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [idToDelete, setIdToDelete] = useState(null);
 
     useEffect(() => {
         axios.get("http://localhost:8080/api/formula")
@@ -23,8 +25,10 @@ export default function GrupoFormulas() {
                     {
                         name: "Grupo de fórmulas",
                         formula: res.data.map(f => ({
+                            id: f.id,
                             codigo: f.codigo,
-                            desc: f.descripcion
+                            desc: f.descripcion,
+                            estado: f.estado
                         }))
                     }
                 ]);
@@ -96,6 +100,20 @@ export default function GrupoFormulas() {
         }));
     };
 
+    const handleDelete=(id)=>{
+        axios.delete(`http://localhost:8080/api/formula/${id}`)
+        .then(res => {
+            const updated = formulas.map(group => ({
+                ...group,
+                formula: group.formula.filter(f => f.id !== id)
+            }));
+            setFormulas(updated);
+        })
+        .catch(err => {
+            console.error("Error al eliminar fórmula:", err);
+        });
+    }
+
     return (
         <section>
             <div>
@@ -105,24 +123,36 @@ export default function GrupoFormulas() {
                         <Card.Body>
                             <Table>
                                 <thead>
-                                    <tr>
+                                    <tr className="text-center">
                                         <th>Codigo</th>
                                         <th>Descripción de la fórmula</th>
-                                        <th></th>
+                                        <th>Estado de la fórmula</th>
+                                        <th>Opciones</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="text-center">
                                     {item.formula.map((f, i) => (
                                         <tr key={f.id + i}>
                                             <td>{f.codigo}</td>
                                             <td>{f.desc}</td>
+                                            <td>
+                                                <span className={
+                                                    f.estado === "1"
+                                                        ? "badge bg-success"
+                                                        : f.estado === "2"
+                                                        ? "badge bg-danger"
+                                                        : "badge bg-secondary"
+                                                }>
+                                                    {f.estado === "1" ? "Activo" : f.estado === "2" ? "Suspendido" : f.estado}
+                                                </span>
+                                            </td>
                                             <td>
                                                 <Dropdown>
                                                     <Dropdown.Toggle>...</Dropdown.Toggle>
                                                     <Dropdown.Menu>
                                                         <Dropdown.Item>Ver fórmula</Dropdown.Item>
                                                         <Dropdown.Item>Editar fórmula</Dropdown.Item>
-                                                        <Dropdown.Item>Eliminar fórmula</Dropdown.Item>
+                                                        <Dropdown.Item onClick={()=>handleDelete(f.id)}>Eliminar fórmula</Dropdown.Item>
                                                     </Dropdown.Menu>
                                                 </Dropdown>
                                             </td>
