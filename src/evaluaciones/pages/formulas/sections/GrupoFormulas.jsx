@@ -1,23 +1,27 @@
-// GrupoFormulas.js
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Card, Table, Button, Dropdown } from "react-bootstrap";
-import AddFormula from './addFormula';
-import DeleteFormula from './deleteFormula'
-import ViewFormula from "./viewFormula";
 import axios from "axios";
+import AddFormula from './addFormula';
+import DeleteFormula from './deleteFormula';
+import ViewFormula from './viewFormula';
+import {
+    iniciaCargaFormulas,
+    cargaFormulas
+} from "../../../slices/formulaSlice";
 
 const applicables = ["usapesos", "restamenor", "nummenor", "restamayor", "nummayor", "copiaprimero", "copiamenor", "copiamayor", "redondeo"];
 
 export default function GrupoFormulas() {
-    const [formulas, setFormulas] = useState({
-        name: "Grupo de fórmulas",
-        formula: []
-    });
+    const dispatch = useDispatch();
+    const { formulas, estaCargandoFormulas } = useSelector((state) => state.formula);
+
     const [showAddModal, setShowAddModal] = useState(false);
-    const [deleteId, setDeleteId]= useState(null);
-    const [showDeleteModal, setShowDeleteModal]= useState(false);
-    const [showViewer, setShowViewer]= useState(false);
+    const [deleteId, setDeleteId] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showViewer, setShowViewer] = useState(false);
     const [selectedFormula, setSelectedFormula] = useState(null);
+
     const [newformula, setNewformula] = useState({
         codigo: "",
         descripcion: "",
@@ -31,11 +35,12 @@ export default function GrupoFormulas() {
     });
 
     useEffect(() => {
-        axios.get("http://localhost:8080/api/formula")
-            .then(res => {
-                setFormulas({
-                    name: "Grupo de fórmulas",
-                    formula: res.data.map(f => ({
+        const fetchFormulas = async () => {
+            dispatch(iniciaCargaFormulas());
+            try {
+                const res = await axios.get("http://localhost:8080/api/formula");
+                dispatch(cargaFormulas({
+                    formulas: res.data.map(f => ({
                         id: f.id,
                         codigo: f.codigo,
                         descripcion: f.descripcion,
@@ -55,15 +60,29 @@ export default function GrupoFormulas() {
                         funcionId: f.funcionId,
                         institutoId: f.institutoId
                     }))
-                });
-            })
-            .catch(err => console.error("Error cargando fórmulas:", err));
-    }, []);
+                }));
+            } catch (err) {
+                console.error("Error cargando fórmulas:", err);
+            }
+        };
+
+        fetchFormulas();
+    }, [dispatch]);
 
     const handleAddShow = () => setShowAddModal(true);
     const handleAddClose = () => {
         setShowAddModal(false);
-        setNewformula({ codigo: "", descripcion: "", applicable: applicables.map(() => 0) });
+        setNewformula({
+            codigo: "",
+            descripcion: "",
+            formula: "asd",
+            funcionId: 1,
+            estado: "1",
+            institucionId: 1,
+            institutoId: 1,
+            departamentoId: 1,
+            applicable: applicables.map(() => 0)
+        });
     };
 
     const handleChange = (e) => {
@@ -97,20 +116,10 @@ export default function GrupoFormulas() {
 
         axios.post("http://localhost:8080/api/formula", payload)
             .then(res => {
-                setFormulas(prev => ({
-                    ...prev,
-                    formula: [...prev.formula, {
-                        id: res.data.id,
-                        codigo: res.data.codigo,
-                        descripcion: res.data.descripcion,
-                        estado: res.data.estado
-                    }]
-                }));
+                dispatch(cargaFormulas({ formulas: [...formulas, res.data] }));
                 handleAddClose();
             })
-            .catch(err => {
-                console.error("Error al guardar fórmula:", err);
-            });
+            .catch(err => console.error("Error al guardar fórmula:", err));
     };
 
     const handleCheckboxChange = (index) => {
@@ -122,10 +131,11 @@ export default function GrupoFormulas() {
         }));
     };
 
-    const handleDeleteShow=(id) => {
+    const handleDeleteShow = (id) => {
         setDeleteId(id);
         setShowDeleteModal(true);
     };
+
     const handleDeleteClose = () => {
         setDeleteId(null);
         setShowDeleteModal(false);
@@ -135,31 +145,27 @@ export default function GrupoFormulas() {
         setSelectedFormula(formula);
         setShowViewer(true);
     };
-    
+
     const handleCloseViewer = () => {
         setShowViewer(false);
         setSelectedFormula(null);
     };
 
-
     const handleDelete = (id) => {
         axios.delete(`http://localhost:8080/api/formula/${id}`)
             .then(() => {
-                setFormulas(prev => ({
-                    ...prev,
-                    formula: prev.formula.filter(f => f.id !== id)
+                dispatch(cargaFormulas({
+                    formulas: formulas.filter(f => f.id !== id)
                 }));
-                handleDeleteClose()
+                handleDeleteClose();
             })
-            .catch(err => {
-                console.error("Error al eliminar fórmula:", err);
-            });
+            .catch(err => console.error("Error al eliminar fórmula:", err));
     };
 
     return (
         <section>
             <Card className="m-4 p-2">
-                <Card.Title>{formulas.name}</Card.Title>
+                <Card.Title>Grupo de fórmulas</Card.Title>
                 <Card.Body>
                     <Table>
                         <thead>
@@ -171,7 +177,7 @@ export default function GrupoFormulas() {
                             </tr>
                         </thead>
                         <tbody className="text-center">
-                            {formulas.formula.map((f, i) => (
+                            {formulas.map((f) => (
                                 <tr key={f.id}>
                                     <td>{f.codigo}</td>
                                     <td>{f.descripcion}</td>
@@ -215,7 +221,7 @@ export default function GrupoFormulas() {
             <DeleteFormula
                 show={showDeleteModal}
                 handleClose={handleDeleteClose}
-                handleDelete={()=>handleDelete(deleteId)}
+                handleDelete={() => handleDelete(deleteId)}
             />
             <ViewFormula
                 show={showViewer}
