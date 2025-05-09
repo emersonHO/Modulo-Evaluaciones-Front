@@ -22,8 +22,8 @@ const AddFormula = ({ show, handleClose, handleSave, newformula, handleChange, h
                         <Form.Label>Insertar descripción</Form.Label>
                         <Form.Control
                             type="text"
-                            name="desc"
-                            value={newformula.desc}
+                            name="descripcion"
+                            value={newformula.descripcion}
                             onChange={handleChange}
                         />
                     </Form.Group>
