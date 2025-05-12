@@ -169,7 +169,7 @@ const AsociarComponentesPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.tituloContainer}>
-        <h2 className={styles.titulo}>ASOCIAR COMPETENCIAS A COMPONENTES</h2>
+        <h2 className={styles.titulo}>ASOCIAR COMPONENTES A COMPETENCIAS</h2>
       </div>
       <div className={styles.tablaContainer}>
         <table className={styles.tabla}>
