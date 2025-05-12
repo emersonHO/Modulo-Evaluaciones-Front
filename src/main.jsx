@@ -1,14 +1,16 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom';
-import { store } from './general/store';
-import { Provider } from 'react-redux';
-import { AyudaDocWeb } from './AyudaDocWeb';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import { store } from "./general/store";
+import { AyudaDocWeb } from "./AyudaDocWeb";
 
-createRoot(document.getElementById('root')).render(
-      <Provider store={ store }>
-        <BrowserRouter>
-          <AyudaDocWeb />
-        </BrowserRouter>
-      </Provider>
-)
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <BrowserRouter>
+        <AyudaDocWeb />
+      </BrowserRouter>
+    </Provider>
+  </React.StrictMode>
+);
