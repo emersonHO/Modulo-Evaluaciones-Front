@@ -92,7 +92,7 @@
 }
 
 .accion {
-  color: #1a237e;
+  color: #142b6b;
   cursor: pointer;
   font-weight: 500;
   display: flex;
@@ -178,13 +178,13 @@
 }
 
 .iconMorado {
-  color: #1a237e;
+  color: #142b6b;
   font-size: 1.3rem;
   margin-right: 4px;
 }
 
 .dialogTitleText {
-  color: #1a237e;
+  color: #142b6b;
   font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -216,7 +216,7 @@
   transition: box-shadow 0.2s;
 }
 .input:focus {
-  box-shadow: 0 0 0 2px #1a237e;
+  box-shadow: 0 0 0 2px #142b6b;
 }
 
 .botonesModal {
@@ -244,7 +244,7 @@
 }
 
 .btnGuardar {
-  background: #1a237e;
+  background: #142b6b;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -255,7 +255,7 @@
   transition: background 0.2s;
 }
 .btnGuardar:hover {
-  background: #1a237e;
+  background: #142b6b;
 }
 
 .addBtn {
@@ -271,13 +271,13 @@
   transition:
     background 0.2s,
     border 0.2s;
-  color: #1a237e;
+  color: #142b6b;
   font-size: 1.2rem;
 }
 .addBtn:hover {
   background: #ede7f6;
-  border-color: #1a237e;
-  color: #1a237e;
+  border-color: #142b6b;
+  color: #142b6b;
 }
 
 .thAcciones {
@@ -324,7 +324,7 @@
 }
 
 .btnGuardarCompetencia {
-  background: #1a237e;
+  background: #142b6b;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -336,5 +336,5 @@
   box-shadow: 0 2px 8px rgba(44, 44, 44, 0.08);
 }
 .btnGuardarCompetencia:hover {
-  background: #283593;
+  background: #142b6b;
 }
