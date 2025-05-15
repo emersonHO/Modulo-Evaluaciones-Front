@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 const applicableLabels = [
@@ -14,19 +15,34 @@ const applicableLabels = [
     "Redondeo"
 ];
 
-export default function FormulaViewer({ show, handleClose, formula }) {
+export default function FormulaViewer({ show, handleClose, formula, funciones }) {
+    const navigate= useNavigate();
+    const location= useLocation();
     const [isEditing, setIsEditing] = useState(false);
     const [editableFormula, setEditableFormula] = useState(null);
+    const [funcion, setFuncion]= useState(1);
 
     useEffect(() => {
-        setEditableFormula(formula);
-        setIsEditing(false);
+        if (formula){
+            setEditableFormula(formula);
+            setIsEditing(false);
+            setFuncion(formula.funcionId || 1)
+        }
     }, [formula]);
 
     const toggleEdit = () => setIsEditing(true);
     const cancelEdit = () => {
         setEditableFormula(formula);
         setIsEditing(false);
+    };
+
+    const handleFuncionChange = (event) => {
+        const selectedId = parseInt(event.target.value);
+        setFuncion(selectedId);
+        setEditableFormula((prev) => ({
+            ...prev,
+            funcionId: selectedId
+        }));
     };
 
     const handleCheckboxChange = (index) => {
@@ -46,11 +62,11 @@ export default function FormulaViewer({ show, handleClose, formula }) {
         const payload = {
             ...editableFormula,
         };
-        console.log("Checando el cuerpo: ", payload)
         axios.put(`http://localhost:8080/api/formula/${editableFormula.id}`, payload)
             .then(() => {
                 setIsEditing(false);
                 handleClose();
+                window.location.reload();
             })
             .catch((err) => {
                 console.error("Error al actualizar la fórmula:", err);
@@ -89,8 +105,18 @@ export default function FormulaViewer({ show, handleClose, formula }) {
                     <p><strong>ID del departamento:</strong> {editableFormula.departamentoId}</p>
                     <p><strong>ID del instituto:</strong> {editableFormula.institutoId}</p>
                 <hr />
-                <p><strong>Aplicabilidad:</strong></p>
                 <Form>
+                    <Form.Label><strong>Función asociada: </strong></Form.Label>
+                        <Form.Select 
+                            value={funcion}
+                            onChange={handleFuncionChange}
+                            disabled={!isEditing}
+                        >
+                            {funciones.map((fu)=>(
+                                <option key={fu.id} value={fu.id}>{fu.nombre}</option>
+                            ))}
+                        </Form.Select>
+                    <Form.Label><strong>Aplicabilidad: </strong></Form.Label>
                     {applicableLabels.map((label, idx) => (
                         <Form.Check
                             key={idx}
