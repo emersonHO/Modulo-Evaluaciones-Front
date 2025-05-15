@@ -17,11 +17,20 @@ export const componenteService = {
 
   // Crear un nuevo componente
   createComponente: async (componente) => {
-    const { data } = await evaluacionesApi.post(
-      "/componente-competencia",
-      componente
-    );
-    return data;
+    try {
+      const { data } = await evaluacionesApi.post("/componente-competencia", {
+        componenteId: componente.componenteId,
+        competenciaId: componente.competenciaId,
+        peso: componente.peso,
+      });
+      return data;
+    } catch (error) {
+      console.error(
+        "Error en createComponente:",
+        error.response?.data || error
+      );
+      throw error;
+    }
   },
 
   // Actualizar un componente existente
@@ -67,5 +76,15 @@ export const componenteService = {
   getCompetencias: async () => {
     const { data } = await evaluacionesApi.get("/competencias");
     return data;
+  },
+
+  // Eliminar un componente por nombre
+  deleteComponenteByNombre: async (nombreComponente) => {
+    return fetch(
+      `/api/componente-competencia/by-componente/${encodeURIComponent(nombreComponente)}`,
+      {
+        method: "DELETE",
+      }
+    );
   },
 };

@@ -120,9 +120,17 @@ const AsociarComponentesPage = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (nombreComponente) => {
     if (window.confirm("¿Está seguro de eliminar este componente?")) {
-      setComponentes((prev) => prev.filter((c) => c.idComponente !== id));
+      try {
+        await componenteService.deleteComponenteByNombre(nombreComponente);
+        setComponentes((prev) =>
+          prev.filter((c) => c.descripcion !== nombreComponente)
+        );
+        alert("Componente borrado.");
+      } catch {
+        alert("Error al eliminar el componente");
+      }
     }
   };
 
@@ -143,11 +151,11 @@ const AsociarComponentesPage = () => {
     setCompetenciasSeleccionadas([]);
   };
 
-  const handleToggleCompetencia = (nombre) => {
+  const handleToggleCompetencia = (competencia) => {
     setCompetenciasSeleccionadas((prev) =>
-      prev.includes(nombre)
-        ? prev.filter((c) => c !== nombre)
-        : [...prev, nombre]
+      prev.some((c) => c.id === competencia.id)
+        ? prev.filter((c) => c.id !== competencia.id)
+        : [...prev, competencia]
     );
   };
 
@@ -160,6 +168,31 @@ const AsociarComponentesPage = () => {
       )
     );
     handleCloseCompetenciasDialog();
+  };
+
+  const handleGuardarCambios = async () => {
+    try {
+      for (const componente of componentes) {
+        if (componente.competencias && componente.competencias.length > 0) {
+          for (const competencia of componente.competencias) {
+            const dataToSend = {
+              componenteId: componente.idComponente,
+              competenciaId: competencia.id,
+              peso: parseFloat(componente.peso) || 0.0,
+            };
+            console.log("Enviando datos:", dataToSend);
+            await componenteService.createComponente(dataToSend);
+          }
+        }
+      }
+      alert("Cambios guardados exitosamente");
+    } catch (error) {
+      console.error("Error al guardar los cambios:", error);
+      alert(
+        "Error al guardar los cambios: " +
+          (error.response?.data?.error || error.message)
+      );
+    }
   };
 
   if (error) {
@@ -193,7 +226,7 @@ const AsociarComponentesPage = () => {
                 <td>{item.descripcion}</td>
                 <td>
                   {item.competencias && item.competencias.length > 0 ? (
-                    item.competencias.join(", ")
+                    item.competencias.map((c) => c.nombre).join(", ")
                   ) : (
                     <span style={{ color: "#888" }}>Sin competencias</span>
                   )}
@@ -227,7 +260,7 @@ const AsociarComponentesPage = () => {
                   <span style={{ color: "#888", margin: "0 4px" }}>/</span>
                   <button
                     className={styles.accionEliminar}
-                    onClick={() => handleDelete(item.idComponente)}
+                    onClick={() => handleDelete(item.descripcion)}
                     title="Eliminar"
                     style={{
                       color: "#d32f2f",
@@ -251,6 +284,20 @@ const AsociarComponentesPage = () => {
         <button className={styles.agregar} onClick={() => handleOpenDialog()}>
           + Agregar Componente
         </button>
+      </div>
+      <div style={{ textAlign: "center", marginTop: "30px" }}>
+        <Button
+          variant="contained"
+          style={{
+            backgroundColor: "#43a047", // Verde
+            color: "#fff",
+            fontWeight: "bold",
+            fontSize: "1.1rem",
+          }}
+          onClick={handleGuardarCambios}
+        >
+          Guardar
+        </Button>
       </div>
       <Dialog
         open={openDialog}
@@ -327,11 +374,13 @@ const AsociarComponentesPage = () => {
           ) : (
             competenciasDisponibles.map((comp) => (
               <FormControlLabel
-                key={comp.id || comp.nombre}
+                key={comp.id}
                 control={
                   <Checkbox
-                    checked={competenciasSeleccionadas.includes(comp.nombre)}
-                    onChange={() => handleToggleCompetencia(comp.nombre)}
+                    checked={competenciasSeleccionadas.some(
+                      (c) => c.id === comp.id
+                    )}
+                    onChange={() => handleToggleCompetencia(comp)}
                   />
                 }
                 label={comp.nombre}
