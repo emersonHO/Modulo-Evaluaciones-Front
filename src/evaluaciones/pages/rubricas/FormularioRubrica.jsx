@@ -35,7 +35,6 @@ export const FormularioRubrica = () => {
 
   const onSubmitRubrica = () => {
     console.log('Rubrica a guardar:', rubrica);
-    // Aquí deberías despachar una acción Redux o hacer una petición POST
   };
 
   return (
