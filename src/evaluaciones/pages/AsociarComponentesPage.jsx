@@ -17,9 +17,9 @@ const AsociarComponentesPage = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [editingComponente, setEditingComponente] = useState(null);
   const [formData, setFormData] = useState({
-    descripcionComponente: "",
-    descripcionCompetencia: "",
+    descripcion: "",
     peso: "",
+    id: "",
   });
   const [componentesDisponibles, setComponentesDisponibles] = useState([]);
   const [openCompetenciasDialog, setOpenCompetenciasDialog] = useState(false);
@@ -55,9 +55,9 @@ const AsociarComponentesPage = () => {
     setOpenDialog(false);
     setEditingComponente(null);
     setFormData({
-      descripcionComponente: "",
-      descripcionCompetencia: "",
+      descripcion: "",
       peso: "",
+      id: "",
     });
   };
 
@@ -69,7 +69,7 @@ const AsociarComponentesPage = () => {
     setFormData((prev) => ({
       ...prev,
       id: selected ? selected.id : "",
-      descripcionComponente: selected ? selected.descripcionComponente : "",
+      descripcion: selected ? selected.descripcion : "",
       peso: selected ? selected.peso : "",
     }));
   };
@@ -194,6 +194,12 @@ const AsociarComponentesPage = () => {
       );
     }
   };
+
+  // Filtrar componentes para que solo quede una descripción única
+  const componentesUnicos = componentesDisponibles.filter(
+    (comp, index, self) =>
+      index === self.findIndex((c) => c.descripcion === comp.descripcion)
+  );
 
   if (error) {
     return <div className={styles.error}>{error}</div>;
@@ -322,11 +328,9 @@ const AsociarComponentesPage = () => {
             onChange={handleSelectComponente}
           >
             <option value="">-- Selecciona un componente --</option>
-            {componentesDisponibles.map((comp) => (
+            {componentesUnicos.map((comp) => (
               <option key={comp.id} value={String(comp.id)}>
-                {comp.descripcion && comp.descripcion.trim() !== ""
-                  ? comp.descripcion
-                  : `Componente ${comp.id}`}
+                {comp.descripcion}
               </option>
             ))}
           </select>
