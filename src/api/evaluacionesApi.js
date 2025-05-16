@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const evaluacionesApi = axios.create({
-  baseURL: "/api",
+  baseURL: "http://localhost:8080/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -15,3 +15,12 @@ evaluacionesApi.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Interceptor para manejar errores
+evaluacionesApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("Error en la llamada API:", error.response?.data || error);
+    throw error;
+  }
+);

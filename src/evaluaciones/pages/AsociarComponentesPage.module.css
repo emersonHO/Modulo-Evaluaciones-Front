@@ -119,20 +119,25 @@
   margin-top: 12px;
   text-align: left;
   width: 800px;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .agregar {
-  background: none;
-  color: #142b6b;
+  background-color: #142b6b;
+  color: white;
+  padding: 12px 24px;
   border: none;
-  font-size: 1rem;
+  border-radius: 8px;
   cursor: pointer;
-  text-decoration: underline;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+  min-width: 200px;
 }
 
 .agregar:hover {
-  color: #142b6b;
+  background-color: #1a3a8f;
 }
 
 .modalOverlay {
@@ -337,4 +342,9 @@
 }
 .btnGuardarCompetencia:hover {
   background: #142b6b;
+}
+
+.crearBtn {
+  width: auto !important;
+  display: inline-block;
 }

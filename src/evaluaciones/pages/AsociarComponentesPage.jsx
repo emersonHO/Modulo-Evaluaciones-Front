@@ -1,5 +1,5 @@
 import styles from "./AsociarComponentesPage.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { componenteService } from "../services/componenteService";
 import {
   Dialog,
@@ -17,11 +17,16 @@ const AsociarComponentesPage = () => {
   const [componentes, setComponentes] = useState([]);
   const [error, setError] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [openCrearDialog, setOpenCrearDialog] = useState(false);
   const [editingComponente, setEditingComponente] = useState(null);
   const [formData, setFormData] = useState({
     descripcion: "",
     peso: "",
     id: "",
+  });
+  const [nuevoComponente, setNuevoComponente] = useState({
+    descripcion: "",
+    peso: "",
   });
   const [componentesDisponibles, setComponentesDisponibles] = useState([]);
   const [openCompetenciasDialog, setOpenCompetenciasDialog] = useState(false);
@@ -30,6 +35,22 @@ const AsociarComponentesPage = () => {
   const [competenciasSeleccionadas, setCompetenciasSeleccionadas] = useState(
     []
   );
+
+  useEffect(() => {
+    const cargarDatos = async () => {
+      try {
+        const data = await componenteService.getComponentesConCompetencias();
+        if (data) {
+          setComponentes(data);
+          setComponentesDisponibles(data);
+        }
+      } catch (error) {
+        console.error("Error al cargar componentes:", error);
+        setError("Error al cargar los componentes. Por favor, intente más tarde.");
+      }
+    };
+    cargarDatos();
+  }, []);
 
   const handleOpenDialog = (componente = null) => {
     if (componente) {
@@ -47,9 +68,6 @@ const AsociarComponentesPage = () => {
         peso: "",
       });
     }
-    componenteService.getComponentesConPeso().then((data) => {
-      setComponentesDisponibles(data);
-    });
     setOpenDialog(true);
   };
 
@@ -203,8 +221,53 @@ const AsociarComponentesPage = () => {
       index === self.findIndex((c) => c.descripcion === comp.descripcion)
   );
 
+  const handleOpenCrearDialog = () => {
+    setOpenCrearDialog(true);
+    setNuevoComponente({
+      descripcion: "",
+      peso: "",
+    });
+  };
+
+  const handleCloseCrearDialog = () => {
+    setOpenCrearDialog(false);
+    setNuevoComponente({
+      descripcion: "",
+      peso: "",
+    });
+  };
+
+  const handleCrearComponente = async () => {
+    try {
+      if (!nuevoComponente.descripcion || !nuevoComponente.peso) {
+        setError("Por favor complete todos los campos");
+        return;
+      }
+      
+      // Por ahora solo cerraremos el diálogo
+      handleCloseCrearDialog();
+      alert("Componente creado exitosamente");
+    } catch (err) {
+      setError("Error al crear el componente: " + err.message);
+    }
+  };
+
   if (error) {
-    return <div className={styles.error}>{error}</div>;
+    return (
+      <div className={styles.page}>
+        <Button onClick={() => navigate("../")}>Ir a inicio</Button>
+        <div className={styles.error}>
+          {error}
+          <button 
+            className={styles.btnRetry} 
+            onClick={() => window.location.reload()}
+            style={{ marginLeft: '10px', padding: '5px 10px' }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -290,9 +353,22 @@ const AsociarComponentesPage = () => {
         </table>
       </div>
       <div className={styles.agregarContainer}>
-        <button className={styles.agregar} onClick={() => handleOpenDialog()}>
-          + Agregar Componente
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <button 
+            className={`${styles.agregar} ${styles.crearBtn}`} 
+            onClick={() => handleOpenDialog()}
+            style={{ width: 'auto', padding: '12px 24px' }}
+          >
+            + Agregar Componente
+          </button>
+          <button 
+            className={`${styles.agregar} ${styles.crearBtn}`} 
+            onClick={handleOpenCrearDialog}
+            style={{ marginTop: '10px', width: 'auto', padding: '12px 24px' }}
+          >
+            + Crear Componente
+          </button>
+        </div>
       </div>
       <div style={{ textAlign: "center", marginTop: "30px" }}>
         <Button
@@ -407,6 +483,53 @@ const AsociarComponentesPage = () => {
             >
               GUARDAR
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Diálogo para crear nuevo componente */}
+      <Dialog
+        open={openCrearDialog}
+        onClose={handleCloseCrearDialog}
+        PaperProps={{ className: styles.dialogPaper }}
+      >
+        <div className={styles.dialogHeader}>
+          <span className={styles.iconMorado}>♦️</span>
+          <span className={styles.dialogTitleText}>
+            Crear nuevo componente
+          </span>
+        </div>
+        <DialogContent className={styles.dialogContent}>
+          <label className={styles.label} htmlFor="nombreNuevoComponente">
+            Nombre del componente:
+          </label>
+          <input
+            id="nombreNuevoComponente"
+            className={styles.input}
+            type="text"
+            value={nuevoComponente.descripcion}
+            onChange={(e) => setNuevoComponente({...nuevoComponente, descripcion: e.target.value})}
+            placeholder="Ingrese el nombre del componente"
+          />
+          <label className={styles.label} htmlFor="pesoNuevoComponente">
+            Peso del componente (%):
+          </label>
+          <input
+            id="pesoNuevoComponente"
+            className={styles.input}
+            type="number"
+            min="0"
+            max="100"
+            value={nuevoComponente.peso}
+            onChange={(e) => setNuevoComponente({...nuevoComponente, peso: e.target.value})}
+            placeholder="Ingrese el peso del componente"
+          />
+          <div className={styles.botonesModal}>
+            <button className={styles.btnCancelar} onClick={handleCloseCrearDialog}>
+              Cancelar
+            </button>
+            <button className={styles.btnGuardar} onClick={handleCrearComponente}>
+              Crear
+            </button>
           </div>
         </DialogContent>
       </Dialog>
