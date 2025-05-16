@@ -87,4 +87,10 @@ export const componenteService = {
       }
     );
   },
+
+  // Obtener competencias con sus componentes y fórmulas asociadas
+  getCompetenciasComponentesFormulas: async () => {
+    const { data } = await evaluacionesApi.get("/competencias-componentes-formulas");
+    return data;
+  },
 };
