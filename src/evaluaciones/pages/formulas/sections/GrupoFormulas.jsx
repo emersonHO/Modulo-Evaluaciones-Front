@@ -9,12 +9,17 @@ import {
     iniciaCargaFormulas,
     cargaFormulas
 } from "../../../slices/formulaSlice";
+import {
+    iniciaCargaFunciones,
+    cargaFunciones
+} from "../../../slices/funcionSlice";
 
 const applicables = ["usapesos", "restamenor", "nummenor", "restamayor", "nummayor", "copiaprimero", "copiamenor", "copiamayor", "redondeo"];
 
 export default function GrupoFormulas() {
     const dispatch = useDispatch();
     const { formulas, estaCargandoFormulas } = useSelector((state) => state.formula);
+    const { funciones, estaCargandoFunciones } = useSelector((state) => state.funcion);
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
@@ -26,7 +31,7 @@ export default function GrupoFormulas() {
         codigo: "",
         descripcion: "",
         formula: "asd",
-        funcionId: 1,
+        funcionId: 0,
         estado: "1",
         institucionId: 1,
         institutoId: 1,
@@ -67,6 +72,28 @@ export default function GrupoFormulas() {
         };
 
         fetchFormulas();
+    }, [dispatch]);
+
+    useEffect(() => {
+        const fetchFunciones = async () => {
+            dispatch(iniciaCargaFunciones());
+            try {
+                const res = await axios.get("http://localhost:8080/api/funcion");
+                dispatch(cargaFunciones({
+                    funciones: res.data.map(fu => ({
+                        id: fu.id,
+                        nombre: fu.nombre,
+                        descripcion: fu.descripcion,
+                        funsql: fu.funsql,
+                        estado: fu.estado
+                    }))
+                }));
+            } catch (err) {
+                console.error("Error cargando funciones:", err);
+            }
+        };
+
+        fetchFunciones();
     }, [dispatch]);
 
     const handleAddShow = () => setShowAddModal(true);
@@ -217,6 +244,7 @@ export default function GrupoFormulas() {
                 handleChange={handleChange}
                 handleCheckboxChange={handleCheckboxChange}
                 applicables={applicables}
+                funcionesDisponibles={funciones}
             />
             <DeleteFormula
                 show={showDeleteModal}
@@ -227,6 +255,7 @@ export default function GrupoFormulas() {
                 show={showViewer}
                 handleClose={handleCloseViewer}
                 formula={selectedFormula}
+                funciones={funciones}
             />
         </section>
     );

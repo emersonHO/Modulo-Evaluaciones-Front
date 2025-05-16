@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { RubricaDatos } from './sections/RubricaDatos';
 import CriteriosRubrica  from './sections/CriteriosRubrica';
 import NivelesPorCriterio from './sections/NivelesPorCriterio';
@@ -65,3 +65,5 @@ export const FormularioRubrica = () => {
     </Box>
   );
 };
+
+export default FormularioRubrica;

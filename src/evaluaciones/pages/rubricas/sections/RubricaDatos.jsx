@@ -52,3 +52,5 @@ export const RubricaDatos = ({ rubrica, setRubrica }) => {
     </Box>
   );
 };
+
+export default RubricaDatos;

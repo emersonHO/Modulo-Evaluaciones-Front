@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { CursosLayout } from "../layout";
-import { CursosResumen, CursosCopiar } from "../views";
+import { AsociarComponentesPage } from "../pages";
 
 export const CursosHome = ({ vista }) => {
   let contenido;
 
-  if (vista === "resumen") {
-    contenido = <CursosResumen />;
-  } else if (vista === "copiar") {
-    contenido = <CursosCopiar />;
+  if (vista === "componente") {
+    contenido = <AsociarComponentesPage />;
   } else {
     contenido = <br></br>;
   }
