@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { CursosLayout } from "../layout";
 import { AsociarComponentesPage } from "../pages";
+import PropTypes from "prop-types";
 
 export const CursosHome = ({ vista }) => {
   let contenido;
@@ -8,8 +9,12 @@ export const CursosHome = ({ vista }) => {
   if (vista === "componente") {
     contenido = <AsociarComponentesPage />;
   } else {
-    contenido = <br></br>;
+    contenido = <br />;
   }
 
   return <CursosLayout>{contenido}</CursosLayout>;
+};
+
+CursosHome.propTypes = {
+  vista: PropTypes.string.isRequired,
 };
