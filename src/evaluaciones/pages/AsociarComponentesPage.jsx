@@ -221,14 +221,6 @@ const AsociarComponentesPage = () => {
       index === self.findIndex((c) => c.descripcion === comp.descripcion)
   );
 
-  const handleOpenCrearDialog = () => {
-    setOpenCrearDialog(true);
-    setNuevoComponente({
-      descripcion: "",
-      peso: "",
-    });
-  };
-
   const handleCloseCrearDialog = () => {
     setOpenCrearDialog(false);
     setNuevoComponente({
@@ -360,13 +352,6 @@ const AsociarComponentesPage = () => {
             style={{ width: 'auto', padding: '12px 24px' }}
           >
             + Agregar Componente
-          </button>
-          <button 
-            className={`${styles.agregar} ${styles.crearBtn}`} 
-            onClick={handleOpenCrearDialog}
-            style={{ marginTop: '10px', width: 'auto', padding: '12px 24px' }}
-          >
-            + Crear Componente
           </button>
         </div>
       </div>
