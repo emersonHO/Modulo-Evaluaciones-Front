@@ -130,6 +130,7 @@ export default function GrupoCursos() {
                         </tbody>
                     </Table>
                     <Button>Añadir fórmula</Button>
+                    <Button>Añadir componente</Button>
                 </Card.Body>
             </Card>
         </section>
