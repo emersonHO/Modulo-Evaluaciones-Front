@@ -1,0 +1,39 @@
+/* Cambia el color de fondo del contenedor */
+.tree-container {
+  width: 100vw;
+  height: 80vh;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+}
+
+/* Cambia el color de los círculos de los nodos */
+.rd3t-node circle {
+  fill: #1976d2;         /* Azul para nodos normales */
+  stroke: #1565c0;
+  stroke-width: 2;
+}
+
+/* Cambia el color de los nodos hoja */
+.rd3t-leaf-node circle {
+  fill: #43a047;         /* Verde para hojas */
+  stroke: #2e7d32;
+  stroke-width: 2;
+}
+
+/* Cambia el color del texto del nombre del nodo */
+.rd3t-node text.rd3t-label__title {
+  fill: #1976d2;
+  font-weight: bold;
+}
+
+/* Cambia el color del texto de los atributos */
+.rd3t-node text.rd3t-label__attributes {
+  fill: #333;
+  font-style: italic;
+}
+
+/* Cambia el color de los enlaces */
+.rd3t-link {
+  stroke: #ffb300;       /* Amarillo para enlaces */
+  stroke-width: 2;
+}
