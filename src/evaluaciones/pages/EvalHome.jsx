@@ -10,7 +10,7 @@ export default function MainEval(){
             <Button onClick={() => navigate("/evaluaciones/formulas")}>A formulas</Button>
             <Button onClick={() => navigate("/evaluaciones/componente")}>A componentes/competencia</Button>
             <Button onClick={() => navigate("/evaluaciones/rubricas")}>A rubrica</Button>
-            <Button onClick={() => navigate("/evaluaciones/grupoComponente")}>Componentes</Button>
+            <Button onClick={() => navigate("/evaluaciones/grupocomponente")}>Componentes</Button>
         </main>
     )
 }
