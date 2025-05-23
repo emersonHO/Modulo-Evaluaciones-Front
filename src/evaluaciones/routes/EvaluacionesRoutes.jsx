@@ -3,7 +3,7 @@ import AsociarComponentesPage from "../pages/AsociarComponentesPage";
 import { CompetenciasPage } from "../pages/CompetenciasPage";
 import Formulas from "../pages/formulas";
 import AsignarFormula from "../pages/asignarformula";
-import ComponentePage from "../pages/componente"; 
+import ComponentePage from "../pages/grupocomponente"; 
 
 import MainEval from  "../pages/EvalHome";
 
