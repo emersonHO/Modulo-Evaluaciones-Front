@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { Card, Table, Button, Dropdown } from "react-bootstrap";
 import AddComponente from "./addComponente";
 import ComponenteViewer from "./viewComponente";
-import { Button, Table } from "react-bootstrap";
 
 export default function GrupoComponentes() {
     const [componentes, setComponentes] = useState([]);
@@ -12,7 +13,17 @@ export default function GrupoComponentes() {
     const [newComponente, setNewComponente] = useState({
         codigo: "",
         nombre: "",
-        descripcion: ""
+        evaluacionid: "",
+        peso: "",        
+        orden: "",
+        estado: "",
+        padreid: "",
+        nivel: "",
+        institucionalid: "",
+        calculado: "",
+        departamentoid: "",
+        formulaid: "",
+        curso_id: ""
     });
 
     useEffect(() => {
@@ -34,7 +45,9 @@ export default function GrupoComponentes() {
         axios.post("http://localhost:8080/api/componente", newComponente)
             .then(() => {
                 setShowAddModal(false);
-                setNewComponente({ codigo: "", nombre: "", descripcion: "" });
+                setNewComponente({ codigo: "", nombre: "", evaluacionid: "", peso: "", orden: "",
+        estado: "", padreid: "", nivel: "", institucionalid: "", calculado: "", departamentoid: "", 
+        formulaid: "", curso_id: "" });
                 fetchComponentes();
             })
             .catch(err => console.error("Error al guardar el componente:", err));
