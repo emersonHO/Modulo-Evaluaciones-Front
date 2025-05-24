@@ -37,7 +37,7 @@ export const AppRouter = () => {
           <Navigate
             to={
               status === "authenticated"
-                ? "/evaluaciones/componente"
+                ? "/evaluaciones/*"
                 : "/auth/login"
             }
           />

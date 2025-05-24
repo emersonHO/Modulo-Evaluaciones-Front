@@ -17,7 +17,7 @@ export const LoginPage = () => {
     );
 
     // Redirige manualmente
-    navigate("/evaluaciones/componente");
+    navigate("/evaluaciones/");
   };
 
   return (

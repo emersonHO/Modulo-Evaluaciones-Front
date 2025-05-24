@@ -6,12 +6,14 @@ import {
   DialogContent,
   Checkbox,
   FormControlLabel,
-  Button,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate} from "react-router-dom";
+import { Button } from "react-bootstrap";
 
 const AsociarComponentesPage = () => {
+  const navigate= useNavigate();
   const [componentes, setComponentes] = useState([]);
   const [error, setError] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -207,6 +209,7 @@ const AsociarComponentesPage = () => {
 
   return (
     <div className={styles.page}>
+      <Button onClick={()=> navigate("../")}>Ir a inicio</Button>
       <div className={styles.tituloContainer}>
         <h2 className={styles.titulo}>ASOCIAR COMPONENTES A COMPETENCIAS</h2>
       </div>
