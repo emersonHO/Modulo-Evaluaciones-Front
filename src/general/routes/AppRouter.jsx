@@ -24,8 +24,7 @@ export const AppRouter = () => {
       {status === "authenticated" ? (
         <>
           <Route path="/cursos/*" element={<CursosRoutes />} />
-          <Route path="/evaluaciones/*" element={<EvaluacionesRoutes />} />
-          <Route path="/componentes" element={<ComponenteCompetencia />} />
+          <Route path="/evaluaciones/*" element={<EvaluacionesRoutes />} /> 
         </>
       ) : (
         <Route path="/auth/*" element={<AuthRoutes />} />

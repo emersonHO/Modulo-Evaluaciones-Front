@@ -3,7 +3,9 @@ import AsociarComponentesPage from "../pages/AsociarComponentesPage";
 import { CompetenciasPage } from "../pages/CompetenciasPage";
 import Formulas from "../pages/formulas";
 import AsignarFormula from "../pages/asignarformula";
-import MainEval from "../pages/evalHome";
+import ComponentePage from "../pages/grupocomponente"; 
+
+import MainEval from  "../pages/EvalHome";
 
 export const EvaluacionesRoutes = () => {
   const location = useLocation();
@@ -14,9 +16,11 @@ export const EvaluacionesRoutes = () => {
     <Routes>
       <Route path="componente" element={<AsociarComponentesPage />} />
       <Route path="competencias" element={<CompetenciasPage />} />
-      <Route path='formulas' element={<Formulas/>}/>
-      <Route path="asignarformula" element={<AsignarFormula/>}/>
-      <Route path="/" element={<MainEval/>}/>
+      <Route path="formulas" element={<Formulas />} />
+      <Route path="asignarformula" element={<AsignarFormula />} />
+      <Route path="componentes" element={<ComponentePage />} /> 
+      <Route path="/" element={<MainEval />} />
     </Routes>
   );
 };
+
