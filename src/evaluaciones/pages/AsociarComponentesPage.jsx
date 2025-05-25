@@ -12,6 +12,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate} from "react-router-dom";
 import { Button } from "react-bootstrap";
 
+//import para tarjeta
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import ButtonMui from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+
+
 const AsociarComponentesPage = () => {
   const navigate= useNavigate();
   const [componentes, setComponentes] = useState([]);
@@ -201,12 +210,44 @@ const AsociarComponentesPage = () => {
     return <div className={styles.error}>{error}</div>;
   }
 
+  const bull = (
+  <Box
+    component="span"
+    sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
+  >
+    •
+  </Box>
+);
+
+
+
   return (
     <div className={styles.page}>
       <Button onClick={()=> navigate("../")}>Ir a inicio</Button>
       <div className={styles.tituloContainer}>
         <h2 className={styles.titulo}>ASOCIAR COMPONENTES A COMPETENCIAS</h2>
       </div>
+
+      <Card sx={{ minWidth: 275 }}>
+      <CardContent>
+        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
+          Word of the Day
+        </Typography>
+        <Typography variant="h5" component="div">
+          be{bull}nev{bull}o{bull}lent
+        </Typography>
+        <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>adjective</Typography>
+        <Typography variant="body2">
+          well meaning and kindly.
+          <br />
+          {'"a benevolent smile"'}
+        </Typography>
+      </CardContent>
+      <CardActions>
+        <ButtonMui size="small">Learn More</ButtonMui>
+      </CardActions>
+    </Card>
+
       <div className={styles.tablaContainer}>
         <table className={styles.tabla}>
           <thead>
