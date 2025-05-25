@@ -68,8 +68,13 @@ export const componenteService = {
 
   // Obtener todos los componentes con peso asignado
   getComponentesConPeso: async () => {
-    const { data } = await evaluacionesApi.get("/componentes-con-peso");
-    return data;
+    try {
+      const { data } = await evaluacionesApi.get("/componentes-con-peso");
+      return data;
+    } catch (error) {
+      console.error("Error en getComponentesConPeso:", error);
+      throw error;
+    }
   },
 
   // Obtener todas las competencias
@@ -80,11 +85,33 @@ export const componenteService = {
 
   // Eliminar un componente por nombre
   deleteComponenteByNombre: async (nombreComponente) => {
-    return fetch(
-      `/api/componente-competencia/by-componente/${encodeURIComponent(nombreComponente)}`,
-      {
-        method: "DELETE",
+    try {
+      const { data } = await evaluacionesApi.delete(
+        `/componente-competencia/by-componente/${encodeURIComponent(nombreComponente)}`
+      );
+      return data;
+    } catch (error) {
+      console.error("Error en deleteComponenteByNombre:", error);
+      throw error;
+    }
+  },
+
+  // Crear un nuevo componente base
+  crearComponenteBase: async (componente) => {
+    try {
+      const response = await evaluacionesApi.post("/componentes-con-peso", {
+        descripcion: componente.descripcion,
+        peso: parseFloat(componente.peso),
+      });
+      
+      if (!response.data) {
+        throw new Error("No se recibió respuesta del servidor");
       }
-    );
+      
+      return response.data;
+    } catch (error) {
+      console.error("Error en crearComponenteBase:", error.response?.data || error);
+      throw error;
+    }
   },
 };

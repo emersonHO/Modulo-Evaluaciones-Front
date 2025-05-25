@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styles from "./ComponenteCompetencia.module.css";
+import { componenteService } from "../services/componenteService";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function ComponenteCompetencia() {
+  const navigate = useNavigate();
   const [componentes, setComponentes] = useState([]);
   const [formData, setFormData] = useState({
     id: "",
@@ -12,25 +16,37 @@ function ComponenteCompetencia() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchComponentes = async () => {
-      try {
-        const response = await fetch("/api/componentes-con-peso");
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("Datos recibidos:", data);
-        setComponentes(data);
-      } catch (error) {
-        console.error("Error al cargar los componentes:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchComponentes();
   }, []);
+
+  const fetchComponentes = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await componenteService.getComponentesConPeso();
+      console.log("Datos recibidos:", data);
+      setComponentes(data || []);
+    } catch (error) {
+      console.error("Error completo:", error);
+      console.error("Respuesta del servidor:", error.response);
+      console.error("Mensaje de error:", error.message);
+      
+      let mensajeError = "Error al cargar los componentes. ";
+      if (error.response?.status === 404) {
+        mensajeError += "No se encontró el recurso solicitado.";
+      } else if (error.response?.status === 500) {
+        mensajeError += "Error interno del servidor.";
+      } else if (error.message.includes("Network Error")) {
+        mensajeError += "No se pudo conectar con el servidor. Verifica que el servidor esté corriendo en http://localhost:8080";
+      } else {
+        mensajeError += error.response?.data?.message || error.message;
+      }
+      
+      setError(mensajeError);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSelectComponente = (e) => {
     const selectedId = e.target.value;
@@ -45,17 +61,36 @@ function ComponenteCompetencia() {
     }));
   };
 
-  if (loading)
-    return <div className={styles.loading}>Cargando componentes...</div>;
-  if (error)
+  if (loading) {
     return (
-      <div className={styles.error}>
-        Error al cargar los componentes: {error}
+      <div className={styles.container}>
+        <Button onClick={() => navigate("../")}>Volver a inicio</Button>
+        <div className={styles.loading}>Cargando componentes...</div>
       </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <Button onClick={() => navigate("../")}>Volver a inicio</Button>
+        <div className={styles.error}>
+          {error}
+          <button 
+            className={styles.btnRetry} 
+            onClick={fetchComponentes}
+            style={{ marginLeft: '10px', padding: '5px 10px' }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
+      <Button onClick={() => navigate("../")}>Volver a inicio</Button>
       <h2>Componentes y Competencias</h2>
       {componentes.length === 0 ? (
         <p>No hay componentes asociados</p>
