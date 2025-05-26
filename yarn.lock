@@ -1029,10 +1029,10 @@ balanced-match@^1.0.0:
   resolved "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-bootstrap@^5.3.5:
-  version "5.3.5"
-  resolved "https://registry.npmjs.org/bootstrap/-/bootstrap-5.3.5.tgz"
-  integrity sha512-ct1CHKtiobRimyGzmsSldEtM03E8fcEX4Tb3dGXz1V8faRwM50+vfHwTzOxB3IlKO7m+9vTH3s/3C6T2EAPeTA==
+bootstrap@^5.3.6:
+  version "5.3.6"
+  resolved "https://registry.npmjs.org/bootstrap/-/bootstrap-5.3.6.tgz"
+  integrity sha512-jX0GAcRzvdwISuvArXn3m7KZscWWFAf1MKBcnzaN02qWMb3jpMoUX4/qgeiGzqyIb4ojulRzs89UCUmGcFSzTA==
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -2577,10 +2577,10 @@ punycode@^2.1.0:
   resolved "https://registry.npmjs.org/punycode/-/punycode-2.3.1.tgz"
   integrity sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==
 
-react-bootstrap@^2.10.9:
-  version "2.10.9"
-  resolved "https://registry.npmjs.org/react-bootstrap/-/react-bootstrap-2.10.9.tgz"
-  integrity sha512-TJUCuHcxdgYpOqeWmRApM/Dy0+hVsxNRFvq2aRFQuxhNi/+ivOxC5OdWIeHS3agxvzJ4Ev4nDw2ZdBl9ymd/JQ==
+react-bootstrap@^2.10.10:
+  version "2.10.10"
+  resolved "https://registry.npmjs.org/react-bootstrap/-/react-bootstrap-2.10.10.tgz"
+  integrity sha512-gMckKUqn8aK/vCnfwoBpBVFUGT9SVQxwsYrp9yDHt0arXMamxALerliKBxr1TPbntirK/HGrUAHYbAeQTa9GHQ==
   dependencies:
     "@babel/runtime" "^7.24.7"
     "@restart/hooks" "^0.4.9"
