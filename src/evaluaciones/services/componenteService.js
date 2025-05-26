@@ -103,14 +103,28 @@ export const componenteService = {
         descripcion: componente.descripcion,
         peso: parseFloat(componente.peso),
       });
-      
+
       if (!response.data) {
         throw new Error("No se recibió respuesta del servidor");
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error("Error en crearComponenteBase:", error.response?.data || error);
+      console.error(
+        "Error en crearComponenteBase:",
+        error.response?.data || error
+      );
+      throw error;
+    }
+  },
+
+  // Obtener componentes únicos con id, descripcion y peso
+  getComponentesUnicos: async () => {
+    try {
+      const { data } = await evaluacionesApi.get("/componentes-unicos");
+      return data;
+    } catch (error) {
+      console.error("Error en getComponentesUnicos:", error);
       throw error;
     }
   },

@@ -1,6 +1,8 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import AsociarComponentesPage from "../pages/AsociarComponentesPage";
-import { CompetenciasPage } from "../pages/CompetenciasPage";
+import AsociarComponentesPage from 
+"../pages/componente-competencia/componente/AsociarComponentesPage";
+import { CompetenciasPage } from 
+"../pages/componente-competencia/componente/CompetenciasPage";
 import Formulas from "../pages/formulas";
 import AsignarFormula from "../pages/asignarformula";
 import ComponentePage from "../pages/grupocomponente"; 

@@ -3,7 +3,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AuthRoutes } from "../../seguridad/routes/AuthRoutes";
 import { CursosRoutes } from "../../cursos/routes/CursosRoutes";
 import { EvaluacionesRoutes } from "../../evaluaciones/routes/EvaluacionesRoutes";
-import ComponenteCompetencia from "../../evaluaciones/components/ComponenteCompetencia";
+import ComponenteCompetencia from "../../evaluaciones/pages/componente-competencia/componente/ComponenteCompetencia";
 
 import { CheckingAuth } from "../../seguridad/components";
 import { useCheckAuth } from "../../seguridad/hooks";
@@ -24,7 +24,7 @@ export const AppRouter = () => {
       {status === "authenticated" ? (
         <>
           <Route path="/cursos/*" element={<CursosRoutes />} />
-          <Route path="/evaluaciones/*" element={<EvaluacionesRoutes />} /> 
+          <Route path="/evaluaciones/*" element={<EvaluacionesRoutes />} />
         </>
       ) : (
         <Route path="/auth/*" element={<AuthRoutes />} />
@@ -34,11 +34,7 @@ export const AppRouter = () => {
         path="*"
         element={
           <Navigate
-            to={
-              status === "authenticated"
-                ? "/evaluaciones/*"
-                : "/auth/login"
-            }
+            to={status === "authenticated" ? "/evaluaciones/*" : "/auth/login"}
           />
         }
       />
