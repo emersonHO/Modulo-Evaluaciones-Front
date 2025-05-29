@@ -58,7 +58,7 @@ export const CompetenciasDialog = ({
             options={competenciasDisponibles}
             getOptionLabel={(option) => option.nombre}
             filterOptions={(options, { inputValue }) => {
-              if (inputValue.length < 3) return [];
+              if (inputValue.length < 1) return [];
               return options.filter((option) =>
                 option.nombre.toLowerCase().includes(inputValue.toLowerCase())
               );
