@@ -1,5 +1,4 @@
 import { useState } from "react";
-import axios from "axios";
 
 export const useCompetencias = () => {
   const [competenciasDisponibles, setCompetenciasDisponibles] = useState([]);
@@ -9,8 +8,9 @@ export const useCompetencias = () => {
 
   const cargarCompetencias = async () => {
     try {
-      const response = await axios.get("/api/competencias");
-      setCompetenciasDisponibles(response.data);
+      const response = await fetch("/api/competencias");
+      const data = await response.json();
+      setCompetenciasDisponibles(data);
       return {
         success: true,
         message: "Competencias cargadas exitosamente",

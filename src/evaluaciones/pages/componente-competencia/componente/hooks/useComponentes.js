@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 
 export const useComponentes = () => {
   const [componentes, setComponentes] = useState([]);
@@ -14,10 +13,11 @@ export const useComponentes = () => {
   const cargarComponentes = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(
+      const response = await fetch(
         "http://localhost:8080/api/componentes-no-asociados"
       );
-      const componentesFormateados = response.data.map((comp) => ({
+      const data = await response.json();
+      const componentesFormateados = data.map((comp) => ({
         id: comp.id || comp.idComponente,
         descripcion: comp.nombre || comp.descripcion || "",
         peso: comp.peso || 0,
@@ -48,22 +48,25 @@ export const useComponentes = () => {
     try {
       if (editingComponente) {
         // Actualizar componente existente
-        const response = await axios.put(
+        const response = await fetch(
           `http://localhost:8080/api/componente-competencia/${editingComponente.idComponente}`,
-          formData
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          }
         );
+        const data = await response.json();
         setComponentes((prev) =>
           prev.map((c) =>
-            c.idComponente === editingComponente.idComponente
-              ? response.data
-              : c
+            c.idComponente === editingComponente.idComponente ? data : c
           )
         );
         setComponentesDisponibles((prev) =>
           prev.map((c) =>
-            c.idComponente === editingComponente.idComponente
-              ? response.data
-              : c
+            c.idComponente === editingComponente.idComponente ? data : c
           )
         );
         return {
@@ -72,12 +75,19 @@ export const useComponentes = () => {
         };
       } else {
         // Crear nuevo componente
-        const response = await axios.post(
+        const response = await fetch(
           "http://localhost:8080/api/componente-competencia",
-          formData
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          }
         );
-        setComponentes((prev) => [...prev, response.data]);
-        setComponentesDisponibles((prev) => [...prev, response.data]);
+        const data = await response.json();
+        setComponentes((prev) => [...prev, data]);
+        setComponentesDisponibles((prev) => [...prev, data]);
         return {
           success: true,
           message: "Componente creado exitosamente",
@@ -107,10 +117,17 @@ export const useComponentes = () => {
 
   const handleGuardarCambios = async () => {
     try {
-      await axios.post(
+      const response = await fetch(
         "http://localhost:8080/api/componente-competencia/guardar-cambios",
-        componentes
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(componentes),
+        }
       );
+      await response.json();
       return {
         success: true,
         message: "Cambios guardados exitosamente",
