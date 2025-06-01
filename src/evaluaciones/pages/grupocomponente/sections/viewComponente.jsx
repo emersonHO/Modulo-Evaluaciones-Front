@@ -1,10 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField,
+    Box,
+    Snackbar,
+    Alert
+} from "@mui/material";
+import { useComponentes } from "../../componente-competencia/componente/hooks/useComponentes";
 
 export default function ComponenteViewer({ show, handleClose, componente }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editableComponente, setEditableComponente] = useState(null);
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: "",
+        severity: "success"
+    });
+
+    const { actualizarComponente } = useComponentes();
 
     useEffect(() => {
         if (componente) {
@@ -14,6 +31,7 @@ export default function ComponenteViewer({ show, handleClose, componente }) {
     }, [componente]);
 
     const toggleEdit = () => setIsEditing(true);
+    
     const cancelEdit = () => {
         setEditableComponente(componente);
         setIsEditing(false);
@@ -24,70 +42,105 @@ export default function ComponenteViewer({ show, handleClose, componente }) {
         setEditableComponente(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSave = () => {
-        axios.put(`http://localhost:8080/api/componente/${editableComponente.id}`, editableComponente)
-            .then(() => {
-                setIsEditing(false);
-                handleClose();
-                window.location.reload();
-            })
-            .catch(err => {
-                console.error("Error al actualizar el componente:", err);
+    const handleSave = async () => {
+        try {
+            await actualizarComponente(editableComponente.id, editableComponente);
+            setIsEditing(false);
+            handleClose();
+            setSnackbar({
+                open: true,
+                message: "Componente actualizado exitosamente",
+                severity: "success"
             });
+        } catch (err) {
+            console.error("Error al actualizar el componente:", err);
+            setSnackbar({
+                open: true,
+                message: "Error al actualizar el componente",
+                severity: "error"
+            });
+        }
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbar(prev => ({ ...prev, open: false }));
     };
 
     if (!editableComponente) return null;
 
     return (
-        <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>{isEditing ? "Editar componente" : "Detalle del componente"}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group>
-                        <Form.Label>Código</Form.Label>
-                        <Form.Control
-                            type="text"
+        <>
+            <Dialog open={show} onClose={handleClose} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    {isEditing ? "Editar componente" : "Detalle del componente"}
+                </DialogTitle>
+                <DialogContent>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+                        <TextField
+                            label="Código"
                             name="codigo"
                             value={editableComponente.codigo}
                             onChange={handleChange}
                             disabled={!isEditing}
+                            fullWidth
+                            variant="outlined"
                         />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Nombre</Form.Label>
-                        <Form.Control
-                            type="text"
+                        <TextField
+                            label="Nombre"
                             name="nombre"
                             value={editableComponente.nombre}
                             onChange={handleChange}
                             disabled={!isEditing}
+                            fullWidth
+                            variant="outlined"
                         />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Descripción</Form.Label>
-                        <Form.Control
-                            as="textarea"
+                        <TextField
+                            label="Descripción"
                             name="descripcion"
                             value={editableComponente.descripcion}
                             onChange={handleChange}
                             disabled={!isEditing}
+                            fullWidth
+                            multiline
+                            rows={4}
+                            variant="outlined"
                         />
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                {isEditing ? (
-                    <>
-                        <Button variant="secondary" onClick={cancelEdit}>Cancelar</Button>
-                        <Button variant="primary" onClick={handleSave}>Guardar</Button>
-                    </>
-                ) : (
-                    <Button variant="warning" onClick={toggleEdit}>Editar</Button>
-                )}
-                <Button variant="outline-secondary" onClick={handleClose}>Cerrar</Button>
-            </Modal.Footer>
-        </Modal>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    {isEditing ? (
+                        <>
+                            <Button onClick={cancelEdit} color="inherit">
+                                Cancelar
+                            </Button>
+                            <Button onClick={handleSave} variant="contained" color="primary">
+                                Guardar
+                            </Button>
+                        </>
+                    ) : (
+                        <Button onClick={toggleEdit} variant="contained" color="warning">
+                            Editar
+                        </Button>
+                    )}
+                    <Button onClick={handleClose} variant="outlined" color="inherit">
+                        Cerrar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+            >
+                <Alert 
+                    onClose={handleSnackbarClose} 
+                    severity={snackbar.severity}
+                    sx={{ width: '100%' }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+        </>
     );
 }

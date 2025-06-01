@@ -68,8 +68,8 @@ export default function GrupoComponentes() {
                 <thead>
                     <tr>
                         <th>Código</th>
-                        <th>Nombre</th>
                         <th>Descripción</th>
+                        <th>Peso</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -77,8 +77,8 @@ export default function GrupoComponentes() {
                     {componentes.map(comp => (
                         <tr key={comp.id}>
                             <td>{comp.codigo}</td>
-                            <td>{comp.nombre}</td>
                             <td>{comp.descripcion}</td>
+                            <th>{comp.peso}</th>
                             <td>
                                 <Button variant="info" size="sm" onClick={() => openViewer(comp)}>
                                     Ver
