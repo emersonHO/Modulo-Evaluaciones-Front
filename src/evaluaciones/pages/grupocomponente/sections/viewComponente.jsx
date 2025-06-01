@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -8,13 +8,15 @@ import {
     TextField,
     Box,
     Snackbar,
-    Alert
+    Alert,
+    Grid,
+    Typography
 } from "@mui/material";
 import { useComponentes } from "../../componente-competencia/componente/hooks/useComponentes";
 
-export default function ComponenteViewer({ show, handleClose, componente }) {
+const ComponenteViewer = ({ show, handleClose, componente }) => {
+    const [editedComponente, setEditedComponente] = useState(componente || {});
     const [isEditing, setIsEditing] = useState(false);
-    const [editableComponente, setEditableComponente] = useState(null);
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -23,28 +25,21 @@ export default function ComponenteViewer({ show, handleClose, componente }) {
 
     const { actualizarComponente } = useComponentes();
 
-    useEffect(() => {
-        if (componente) {
-            setEditableComponente(componente);
-            setIsEditing(false);
-        }
-    }, [componente]);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setEditedComponente(prev => ({ ...prev, [name]: value }));
+    };
 
     const toggleEdit = () => setIsEditing(true);
     
     const cancelEdit = () => {
-        setEditableComponente(componente);
+        setEditedComponente(componente);
         setIsEditing(false);
-    };
-
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setEditableComponente(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSave = async () => {
         try {
-            await actualizarComponente(editableComponente.id, editableComponente);
+            await actualizarComponente(editedComponente.id, editedComponente);
             setIsEditing(false);
             handleClose();
             setSnackbar({
@@ -66,46 +61,60 @@ export default function ComponenteViewer({ show, handleClose, componente }) {
         setSnackbar(prev => ({ ...prev, open: false }));
     };
 
-    if (!editableComponente) return null;
+    if (!componente) return null;
 
     return (
         <>
-            <Dialog open={show} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>
-                    {isEditing ? "Editar componente" : "Detalle del componente"}
-                </DialogTitle>
+            <Dialog
+                open={show}
+                onClose={handleClose}
+                maxWidth="md"
+                fullWidth
+            >
+                <DialogTitle>Detalles del Componente</DialogTitle>
                 <DialogContent>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-                        <TextField
-                            label="Código"
-                            name="codigo"
-                            value={editableComponente.codigo}
-                            onChange={handleChange}
-                            disabled={!isEditing}
-                            fullWidth
-                            variant="outlined"
-                        />
-                        <TextField
-                            label="Nombre"
-                            name="nombre"
-                            value={editableComponente.nombre}
-                            onChange={handleChange}
-                            disabled={!isEditing}
-                            fullWidth
-                            variant="outlined"
-                        />
-                        <TextField
-                            label="Descripción"
-                            name="descripcion"
-                            value={editableComponente.descripcion}
-                            onChange={handleChange}
-                            disabled={!isEditing}
-                            fullWidth
-                            multiline
-                            rows={4}
-                            variant="outlined"
-                        />
-                    </Box>
+                    <Grid container spacing={2} sx={{ mt: 1 }}>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle2">Código</Typography>
+                            <Typography variant="body1">{componente.codigo}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle2">Descripción</Typography>
+                            <Typography variant="body1">{componente.descripcion}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle2">Evaluación ID</Typography>
+                            <Typography variant="body1">{componente.evaluacionid}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle2">Peso</Typography>
+                            <Typography variant="body1">{componente.peso}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle2">Curso ID</Typography>
+                            <Typography variant="body1">{componente.cursoid}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle2">Orden</Typography>
+                            <Typography variant="body1">{componente.orden}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle2">ID Padre</Typography>
+                            <Typography variant="body1">{componente.padreid || "Ninguno"}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle2">Nivel</Typography>
+                            <Typography variant="body1">{componente.nivel}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle2">Calculado</Typography>
+                            <Typography variant="body1">{componente.calculado ? "Sí" : "No"}</Typography>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Typography variant="subtitle2">ID Fórmula</Typography>
+                            <Typography variant="body1">{componente.formulaid || "Ninguno"}</Typography>
+                        </Grid>
+                    </Grid>
                 </DialogContent>
                 <DialogActions>
                     {isEditing ? (
@@ -122,9 +131,7 @@ export default function ComponenteViewer({ show, handleClose, componente }) {
                             Editar
                         </Button>
                     )}
-                    <Button onClick={handleClose} variant="outlined" color="inherit">
-                        Cerrar
-                    </Button>
+                    <Button onClick={handleClose}>Cerrar</Button>
                 </DialogActions>
             </Dialog>
 
@@ -143,4 +150,6 @@ export default function ComponenteViewer({ show, handleClose, componente }) {
             </Snackbar>
         </>
     );
-}
+};
+
+export default ComponenteViewer;

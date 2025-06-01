@@ -1,39 +1,76 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import { Card, Table, Button, Dropdown } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import {
+    Button,
+    Typography,
+    Box,
+    Container,
+    Alert,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    CircularProgress,
+    Snackbar,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    DialogContentText
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import { useNavigate } from "react-router-dom";
 import AddComponente from "./addComponente";
 import ComponenteViewer from "./viewComponente";
+import { componenteService } from "../../../services/componenteService";
 
 export default function GrupoComponentes() {
+    const navigate = useNavigate();
     const [componentes, setComponentes] = useState([]);
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [selectedComponente, setSelectedComponente] = useState(null);
+    const [componenteAEliminar, setComponenteAEliminar] = useState(null);
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: "",
+        severity: "success"
+    });
     const [newComponente, setNewComponente] = useState({
         codigo: "",
-        nombre: "",
+        descripcion: "",
         evaluacionid: "",
-        peso: "",        
+        peso: "",
+        cursoid: "",
         orden: "",
-        estado: "",
         padreid: "",
         nivel: "",
-        institucionalid: "",
-        calculado: "",
-        departamentoid: "",
-        formulaid: "",
-        curso_id: ""
+        calculado: "false",
+        formulaid: ""
     });
 
     useEffect(() => {
         fetchComponentes();
     }, []);
 
-    const fetchComponentes = () => {
-        axios.get("http://localhost:8080/api/componente")
-            .then(res => setComponentes(res.data))
-            .catch(err => console.error("Error al obtener componentes:", err));
+    const fetchComponentes = async () => {
+        try {
+            setIsLoading(true);
+            const data = await componenteService.getComponentes();
+            setComponentes(data);
+            setError(null);
+        } catch (err) {
+            console.error("Error al cargar componentes:", err);
+            setError("Error al cargar los componentes. Por favor, intente más tarde.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleChange = (e) => {
@@ -41,16 +78,69 @@ export default function GrupoComponentes() {
         setNewComponente(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSave = () => {
-        axios.post("http://localhost:8080/api/componente", newComponente)
-            .then(() => {
-                setShowAddModal(false);
-                setNewComponente({ codigo: "", nombre: "", evaluacionid: "", peso: "", orden: "",
-        estado: "", padreid: "", nivel: "", institucionalid: "", calculado: "", departamentoid: "", 
-        formulaid: "", curso_id: "" });
+    const handleSave = async () => {
+        try {
+            await componenteService.createComponente(newComponente);
+            setShowAddModal(false);
+            setNewComponente({
+                codigo: "",
+                descripcion: "",
+                evaluacionid: "",
+                peso: "",
+                cursoid: "",
+                orden: "",
+                padreid: "",
+                nivel: "",
+                calculado: "false",
+                formulaid: ""
+            });
+            fetchComponentes();
+            setSnackbar({
+                open: true,
+                message: "Componente guardado exitosamente",
+                severity: "success"
+            });
+        } catch (err) {
+            console.error("Error al guardar el componente:", err);
+            setSnackbar({
+                open: true,
+                message: "Error al guardar el componente",
+                severity: "error"
+            });
+        }
+    };
+
+    const handleDeleteComponente = (componente) => {
+        setComponenteAEliminar(componente);
+        setShowDeleteDialog(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (componenteAEliminar) {
+            try {
+                await componenteService.deleteComponente(componenteAEliminar.id);
+                setSnackbar({
+                    open: true,
+                    message: "Componente eliminado exitosamente",
+                    severity: "success"
+                });
                 fetchComponentes();
-            })
-            .catch(err => console.error("Error al guardar el componente:", err));
+            } catch (err) {
+                console.error("Error al eliminar el componente:", err);
+                setSnackbar({
+                    open: true,
+                    message: "Error al eliminar el componente",
+                    severity: "error"
+                });
+            }
+            setShowDeleteDialog(false);
+            setComponenteAEliminar(null);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setShowDeleteDialog(false);
+        setComponenteAEliminar(null);
     };
 
     const openViewer = (comp) => {
@@ -58,36 +148,99 @@ export default function GrupoComponentes() {
         setShowViewModal(true);
     };
 
+    const handleSnackbarClose = () => {
+        setSnackbar(prev => ({ ...prev, open: false }));
+    };
+
     return (
-        <div className="container mt-4">
-            <h3>Gestión de Componentes</h3>
-            <Button className="mb-3" onClick={() => setShowAddModal(true)}>
-                Añadir Componente
-            </Button>
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th>Descripción</th>
-                        <th>Peso</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {componentes.map(comp => (
-                        <tr key={comp.id}>
-                            <td>{comp.codigo}</td>
-                            <td>{comp.descripcion}</td>
-                            <th>{comp.peso}</th>
-                            <td>
-                                <Button variant="info" size="sm" onClick={() => openViewer(comp)}>
-                                    Ver
-                                </Button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </Table>
+        <Container maxWidth="lg" sx={{ mt: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h4" component="h1">
+                    Gestión de Componentes
+                </Typography>
+            </Box>
+
+            {error && (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                    {error}
+                </Alert>
+            )}
+
+            {isLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                    <CircularProgress />
+                </Box>
+            ) : (
+                <>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setShowAddModal(true)}
+                        sx={{ mb: 3 }}
+                    >
+                        Añadir Componente
+                    </Button>
+
+                    <TableContainer component={Paper}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Código</TableCell>
+                                    <TableCell>Descripción</TableCell>
+                                    <TableCell>Evaluación</TableCell>
+                                    <TableCell>Peso</TableCell>
+                                    <TableCell>Curso</TableCell>
+                                    <TableCell>Nivel</TableCell>
+                                    <TableCell>Calculado</TableCell>
+                                    <TableCell>Acciones</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {componentes.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={8} align="center">
+                                            No hay componentes disponibles
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    componentes.map(comp => (
+                                        <TableRow key={comp.id}>
+                                            <TableCell>{comp.codigo}</TableCell>
+                                            <TableCell>{comp.descripcion}</TableCell>
+                                            <TableCell>{comp.evaluacionid}</TableCell>
+                                            <TableCell>{comp.peso}</TableCell>
+                                            <TableCell>{comp.cursoid}</TableCell>
+                                            <TableCell>{comp.nivel}</TableCell>
+                                            <TableCell>{comp.calculado ? "Sí" : "No"}</TableCell>
+                                            <TableCell>
+                                                <Button
+                                                    variant="contained"
+                                                    color="info"
+                                                    size="small"
+                                                    startIcon={<EditIcon />}
+                                                    onClick={() => openViewer(comp)}
+                                                    sx={{ mr: 1 }}
+                                                >
+                                                    Ver
+                                                </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    color="error"
+                                                    size="small"
+                                                    startIcon={<DeleteIcon />}
+                                                    onClick={() => handleDeleteComponente(comp)}
+                                                >
+                                                    Eliminar
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </>
+            )}
 
             <AddComponente
                 show={showAddModal}
@@ -102,6 +255,38 @@ export default function GrupoComponentes() {
                 handleClose={() => setShowViewModal(false)}
                 componente={selectedComponente}
             />
-        </div>
+
+            <Dialog
+                open={showDeleteDialog}
+                onClose={handleCancelDelete}
+            >
+                <DialogTitle>Confirmar eliminación</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        ¿Está seguro que desea eliminar este componente? Esta acción no se puede deshacer.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelDelete}>Cancelar</Button>
+                    <Button onClick={handleConfirmDelete} color="error" autoFocus>
+                        Eliminar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+            >
+                <Alert 
+                    onClose={handleSnackbarClose} 
+                    severity={snackbar.severity}
+                    sx={{ width: '100%' }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+        </Container>
     );
 }

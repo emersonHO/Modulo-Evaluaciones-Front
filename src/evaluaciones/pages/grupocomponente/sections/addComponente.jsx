@@ -14,30 +14,30 @@ import {
 
 const AddComponente = ({ show, handleClose, handleSave, newComponente, handleChange }) => {
     const evaluacionOptions = [
-        { value: 1, label: "Evaluación 1" },
-        { value: 2, label: "Evaluación 2" },
-        { value: 3, label: "Evaluación 3" },
-        { value: 4, label: "Evaluación 4" }
+        { value: 1, label: "Evaluación Escrita" },
+        { value: 2, label: "Evaluación Oral" },
+        { value: 3, label: "Rúbrica" },
+        { value: 4, label: "Proyecto del Curso" }
     ];
 
     const cursoOptions = [
-        { value: 1, label: "Curso 1" },
-        { value: 3, label: "Curso 3" },
-        { value: 7, label: "Curso 7" },
-        { value: 8, label: "Curso 8" },
-        { value: 9, label: "Curso 9" },
-        { value: 20, label: "Curso 20" },
-        { value: 21, label: "Curso 21" },
-        { value: 22, label: "Curso 22" },
-        { value: 37, label: "Curso 37" },
-        { value: 38, label: "Curso 38" }
+        { value: 1, label: "Análisis y Diseño de Software - G1 - 2023-I" },
+        { value: 3, label: "Arquitecturas Modernas - G1 - 2023-I" },
+        { value: 7, label: "Desarrollo de Software - G1 - 2023-II" },
+        { value: 8, label: "Métodos y Técnicas de Diseño - G2 - 2023-II" },
+        { value: 9, label: "Metodologías Ágiles - G1 - 2023-II" },
+        { value: 20, label: "Métodos y Técnicas de Diseño - G1 - 2024-I" },
+        { value: 21, label: "Arquitecturas Modernas - G2 - 2024-I" },
+        { value: 22, label: "Análisis y Diseño de Software - G2 - 2024-I" },
+        { value: 37, label: "TALLER DE CONSTRUCCIÓN DE SOFTWARE I" },
+        { value: 38, label: "Arquitecturas Modernas - G1 - 2024-II" }
     ];
 
     const nivelOptions = [
-        { value: 1, label: "Nivel 1" },
-        { value: 2, label: "Nivel 2" },
-        { value: 3, label: "Nivel 3" },
-        { value: 4, label: "Nivel 4" }
+        { value: 1, label: "1" },
+        { value: 2, label: "2" },
+        { value: 3, label: "3" },
+        { value: 4, label: "4" }
     ];
 
     return (
