@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -10,11 +10,20 @@ import {
     Snackbar,
     Alert,
     Grid,
-    Typography
+    Typography,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper
 } from "@mui/material";
 import { useComponentes } from "../../componente-competencia/componente/hooks/useComponentes";
+import axios from "axios";
 
 const ComponenteViewer = ({ show, handleClose, componente }) => {
+    const [componentes, setComponentes] = useState([]);
     const [editedComponente, setEditedComponente] = useState(componente || {});
     const [isEditing, setIsEditing] = useState(false);
     const [snackbar, setSnackbar] = useState({
@@ -24,6 +33,25 @@ const ComponenteViewer = ({ show, handleClose, componente }) => {
     });
 
     const { actualizarComponente } = useComponentes();
+
+    useEffect(() => {
+        const fetchComponentes = async () => {
+            try {
+                const res = await axios.get("http://localhost:8080/api/componentes");
+                setComponentes(res.data);
+            } catch (err) {
+                console.error("Error cargando componentes:", err);
+                setSnackbar({
+                    open: true,
+                    message: "Error al cargar los componentes",
+                    severity: "error"
+                });
+            }
+        };
+        if (show) {
+            fetchComponentes();
+        }
+    }, [show]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -73,48 +101,36 @@ const ComponenteViewer = ({ show, handleClose, componente }) => {
             >
                 <DialogTitle>Detalles del Componente</DialogTitle>
                 <DialogContent>
-                    <Grid container spacing={2} sx={{ mt: 1 }}>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle2">Código</Typography>
-                            <Typography variant="body1">{componente.codigo}</Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle2">Descripción</Typography>
-                            <Typography variant="body1">{componente.descripcion}</Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle2">Evaluación ID</Typography>
-                            <Typography variant="body1">{componente.evaluacionid}</Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle2">Peso</Typography>
-                            <Typography variant="body1">{componente.peso}</Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle2">Curso ID</Typography>
-                            <Typography variant="body1">{componente.cursoid}</Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle2">Orden</Typography>
-                            <Typography variant="body1">{componente.orden}</Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle2">ID Padre</Typography>
-                            <Typography variant="body1">{componente.padreid || "Ninguno"}</Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle2">Nivel</Typography>
-                            <Typography variant="body1">{componente.nivel}</Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle2">Calculado</Typography>
-                            <Typography variant="body1">{componente.calculado ? "Sí" : "No"}</Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="subtitle2">ID Fórmula</Typography>
-                            <Typography variant="body1">{componente.formulaid || "Ninguno"}</Typography>
-                        </Grid>
-                    </Grid>
+                    <TableContainer component={Paper} sx={{ mt: 2 }}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Código</TableCell>
+                                    <TableCell>Descripción</TableCell>
+                                    <TableCell>Peso</TableCell>
+                                    <TableCell>Evaluación ID</TableCell>
+                                    <TableCell>Curso ID</TableCell>
+                                    <TableCell>Orden</TableCell>
+                                    <TableCell>Nivel</TableCell>
+                                    <TableCell>Calculado</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {componentes.map((comp) => (
+                                    <TableRow key={comp.id}>
+                                        <TableCell>{comp.codigo}</TableCell>
+                                        <TableCell>{comp.descripcion}</TableCell>
+                                        <TableCell>{comp.peso}</TableCell>
+                                        <TableCell>{comp.evaluacionid}</TableCell>
+                                        <TableCell>{comp.cursoid}</TableCell>
+                                        <TableCell>{comp.orden}</TableCell>
+                                        <TableCell>{comp.nivel}</TableCell>
+                                        <TableCell>{comp.calculado ? "Sí" : "No"}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </DialogContent>
                 <DialogActions>
                     {isEditing ? (
