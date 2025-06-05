@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
     Button,
     Typography,
@@ -30,8 +30,8 @@ import { componenteService } from "../../../services/componenteService";
 export default function GrupoComponentes() {
     const navigate = useNavigate();
     const [componentes, setComponentes] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -56,22 +56,26 @@ export default function GrupoComponentes() {
     });
 
     useEffect(() => {
+        const fetchComponentes = async () => {
+            setIsLoading(true);
+            try {
+                // Si tienes un servicio, úsalo aquí:
+                // const data = await componenteService.getComponentes();
+                // setComponentes(data);
+
+                // O directamente con fetch:
+                const res = await fetch("http://localhost:8080/componentes");
+                const data = await res.json();
+                setComponentes(data);
+                setError(null);
+            } catch (err) {
+                setError("Error al cargar los componentes. Por favor, intente más tarde.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
         fetchComponentes();
     }, []);
-
-    const fetchComponentes = async () => {
-        try {
-            setIsLoading(true);
-            const data = await componenteService.getComponentes();
-            setComponentes(data);
-            setError(null);
-        } catch (err) {
-            console.error("Error al cargar componentes:", err);
-            setError("Error al cargar los componentes. Por favor, intente más tarde.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -187,10 +191,10 @@ export default function GrupoComponentes() {
                                 <TableRow>
                                     <TableCell>Código</TableCell>
                                     <TableCell>Descripción</TableCell>
-                                    <TableCell>Evaluación</TableCell>
                                     <TableCell>Peso</TableCell>
-                                    <TableCell>Curso</TableCell>
-                                    <TableCell>Nivel</TableCell>
+                                    <TableCell>Evaluación ID</TableCell>
+                                    <TableCell>Curso ID</TableCell>
+                                    <TableCell>Orden</TableCell>
                                     <TableCell>Calculado</TableCell>
                                     <TableCell>Acciones</TableCell>
                                 </TableRow>
@@ -207,22 +211,12 @@ export default function GrupoComponentes() {
                                         <TableRow key={comp.id}>
                                             <TableCell>{comp.codigo}</TableCell>
                                             <TableCell>{comp.descripcion}</TableCell>
-                                            <TableCell>{comp.evaluacionid}</TableCell>
                                             <TableCell>{comp.peso}</TableCell>
+                                            <TableCell>{comp.evaluacionid}</TableCell>
                                             <TableCell>{comp.cursoid}</TableCell>
-                                            <TableCell>{comp.nivel}</TableCell>
-                                            <TableCell>{comp.calculado ? "Sí" : "No"}</TableCell>
+                                            <TableCell>{comp.orden}</TableCell>
+                                            <TableCell>{comp.calculado === "true" ? "Sí" : "No"}</TableCell>
                                             <TableCell>
-                                                <Button
-                                                    variant="contained"
-                                                    color="info"
-                                                    size="small"
-                                                    startIcon={<EditIcon />}
-                                                    onClick={() => openViewer(comp)}
-                                                    sx={{ mr: 1 }}
-                                                >
-                                                    Ver
-                                                </Button>
                                                 <Button
                                                     variant="contained"
                                                     color="error"
@@ -290,3 +284,4 @@ export default function GrupoComponentes() {
         </Container>
     );
 }
+
