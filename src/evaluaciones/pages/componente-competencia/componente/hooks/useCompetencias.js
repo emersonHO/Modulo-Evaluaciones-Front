@@ -8,7 +8,7 @@ export const useCompetencias = () => {
 
   const cargarCompetencias = async () => {
     try {
-      const response = await fetch("/api/competencias");
+      const response = await fetch("http://localhost:8080/api/competencias");
       const data = await response.json();
       setCompetenciasDisponibles(data);
       return {

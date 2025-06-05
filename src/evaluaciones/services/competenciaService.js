@@ -45,4 +45,21 @@ export const competenciaService = {
     const data = await response.json();
     return data;
   },
+
+  // Obtener competencias por componente
+  getCompetenciasByComponente: async (componenteId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/componente-competencia-con-competencias/${componenteId}`
+      );
+      if (!response.ok) {
+        throw new Error("Error al obtener las competencias");
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error en getCompetenciasByComponente:", error);
+      throw error;
+    }
+  },
 };
