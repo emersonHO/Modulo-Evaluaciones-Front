@@ -59,11 +59,6 @@ export default function GrupoComponentes() {
         const fetchComponentes = async () => {
             setIsLoading(true);
             try {
-                // Si tienes un servicio, úsalo aquí:
-                // const data = await componenteService.getComponentes();
-                // setComponentes(data);
-
-                // O directamente con fetch:
                 const res = await fetch("http://localhost:8080/componentes");
                 const data = await res.json();
                 setComponentes(data);
