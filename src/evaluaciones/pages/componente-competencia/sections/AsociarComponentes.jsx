@@ -46,6 +46,7 @@ const AsociarComponentes = () => {
     componentes,
     error,
     componentesDisponibles,
+    componentesRecientes,
     handleDelete,
     handleSave,
     handleGuardarCambios,
@@ -64,23 +65,10 @@ const AsociarComponentes = () => {
 
   const handleOpenDialog = async (componente = null) => {
     try {
-      // Asegurarse de que los componentes estén cargados
-      if (componentesDisponibles.length === 0) {
-        const result = await cargarComponentes();
-        if (!result.success) {
-          setSnackbar({
-            open: true,
-            message: "Error al cargar los componentes disponibles",
-            severity: "error",
-          });
-          return;
-        }
-      }
-
       if (componente) {
         setEditingComponente(componente);
         setFormData({
-          id: componente.idComponente || componente.id,
+          id: componente.id,
           descripcion: componente.descripcion,
           peso: componente.peso,
         });
@@ -114,18 +102,29 @@ const AsociarComponentes = () => {
   };
 
   const handleSaveComponente = async () => {
-    const result = await handleSave(formData, editingComponente);
-    if (result.success) {
-      handleCloseDialog();
+    try {
+      const result = await handleSave(formData, editingComponente);
+      if (result.success) {
+        handleCloseDialog();
+        setSnackbar({
+          open: true,
+          message: result.message,
+          severity: "success",
+        });
+        // Recargar componentes para asegurar que los datos estén actualizados
+        await cargarComponentes();
+      } else {
+        setSnackbar({
+          open: true,
+          message: result.message,
+          severity: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Error al guardar el componente:", error);
       setSnackbar({
         open: true,
-        message: result.message,
-        severity: "success",
-      });
-    } else {
-      setSnackbar({
-        open: true,
-        message: result.message,
+        message: "Error al guardar el componente",
         severity: "error",
       });
     }
@@ -163,24 +162,69 @@ const AsociarComponentes = () => {
     resetCompetencias();
   };
 
-  const handleGuardarCompetencias = () => {
-    setComponentes((prev) =>
-      prev.map((c) =>
-        c.idComponente === componenteSeleccionado.idComponente
-          ? { ...c, competencias: competenciasSeleccionadas }
-          : c
-      )
-    );
-    handleCloseCompetenciasDialog();
+  const handleGuardarCompetencias = async () => {
+    try {
+      // Actualizamos el estado local primero
+      setComponentes((prev) =>
+        prev.map((c) =>
+          c.idComponente === componenteSeleccionado.idComponente
+            ? { ...c, competencias: competenciasSeleccionadas }
+            : c
+        )
+      );
+
+      // Guardamos los cambios en el servidor
+      const result = await handleGuardarCambios();
+
+      if (result.success) {
+        setSnackbar({
+          open: true,
+          message: "Competencias guardadas exitosamente",
+          severity: "success",
+        });
+      } else {
+        setSnackbar({
+          open: true,
+          message: result.message,
+          severity: "error",
+        });
+      }
+
+      handleCloseCompetenciasDialog();
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Error al guardar las competencias",
+        severity: "error",
+      });
+    }
   };
 
   const handleGuardarTodosLosCambios = async () => {
-    const result = await handleGuardarCambios();
-    setSnackbar({
-      open: true,
-      message: result.message,
-      severity: result.success ? "success" : "error",
-    });
+    try {
+      const result = await handleGuardarCambios();
+      if (result.success) {
+        // Recargamos los componentes después de guardar
+        await cargarComponentes();
+        setSnackbar({
+          open: true,
+          message: "Todos los cambios guardados exitosamente",
+          severity: "success",
+        });
+      } else {
+        setSnackbar({
+          open: true,
+          message: result.message,
+          severity: "error",
+        });
+      }
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Error al guardar los cambios",
+        severity: "error",
+      });
+    }
   };
 
   const componentesUnicos = componentesDisponibles.filter(
@@ -263,6 +307,43 @@ const AsociarComponentes = () => {
 
           <Zoom in={true}>
             <Grid container spacing={4} sx={{ mb: 4 }}>
+              {componentesRecientes.length > 0 && (
+                <>
+                  <Grid item xs={12}>
+                    <Typography
+                      variant="h6"
+                      color="primary"
+                      sx={{ mb: 2, fontWeight: "bold" }}
+                    >
+                      Componentes Recientes
+                    </Typography>
+                  </Grid>
+                  {componentesRecientes.map((componente) => (
+                    <Grid item xs={12} sm={6} md={4} key={componente.id}>
+                      <ComponenteCompetenciaCardSingle
+                        componente={componente}
+                        onEdit={handleOpenDialog}
+                        onDelete={handleDeleteComponente}
+                        onAddCompetencias={handleOpenCompetenciasDialog}
+                        isRecent={true}
+                      />
+                    </Grid>
+                  ))}
+                  <Grid item xs={12}>
+                    <Divider sx={{ my: 3 }} />
+                  </Grid>
+                </>
+              )}
+
+              <Grid item xs={12}>
+                <Typography
+                  variant="h6"
+                  color="primary"
+                  sx={{ mb: 2, fontWeight: "bold" }}
+                >
+                  Todos los Componentes
+                </Typography>
+              </Grid>
               {componentes.map((componente) => (
                 <Grid
                   item
