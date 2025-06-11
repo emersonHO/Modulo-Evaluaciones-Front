@@ -3,7 +3,8 @@ import AsociarComponentesPage from "../pages/componente-competencia/componente/A
 import { CompetenciasPage } from "../pages/componente-competencia/componente/CompetenciasPage";
 import Formulas from "../pages/formulas";
 import AsignarFormula from "../pages/asignarformula";
-import ComponentePage from "../pages/grupocomponente"; 
+import ComponentePage from "../pages/grupocomponente";
+
 import MainEval from "../pages/EvalHome";
 
 export const EvaluacionesRoutes = () => {
@@ -17,9 +18,8 @@ export const EvaluacionesRoutes = () => {
       <Route path="competencias" element={<CompetenciasPage />} />
       <Route path="formulas" element={<Formulas />} />
       <Route path="asignarformula" element={<AsignarFormula />} />
-      <Route path="grupocomponente" element={<ComponentePage />} /> 
+      <Route path="componentes" element={<ComponentePage />} />
       <Route path="/" element={<MainEval />} />
     </Routes>
   );
 };
-
