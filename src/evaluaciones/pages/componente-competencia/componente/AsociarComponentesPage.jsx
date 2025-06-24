@@ -121,7 +121,7 @@ const AsociarComponentesPage = () => {
       handleCloseDialog();
       setSnackbar({
         open: true,
-        message: "Nombre del componente actualizado localmente",
+        message: "Nombre del componente actualizado.",
         severity: "success",
       });
       return;
@@ -244,7 +244,7 @@ const AsociarComponentesPage = () => {
       );
       setSnackbar({
         open: true,
-        message: "Competencias asociadas localmente",
+        message: "Competencias asociadas",
         severity: "success",
       });
       handleCloseCompetenciasDialog();
