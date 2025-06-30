@@ -122,9 +122,9 @@ export function ComponenteCompetenciaCard({
           </Typography>
           {componente.competencias && componente.competencias.length > 0 ? (
             <ul style={{ paddingLeft: 16, margin: 0 }}>
-              {componente.competencias.map((competencia, index) => (
+              {componente.competencias.map((competencia) => (
                 <li
-                  key={`${competencia.id}-${index}-${competencia.descripcion}`}
+                  key={competencia.id}
                   style={{
                     background: "#f1f1f1",
                     borderRadius: 12,
