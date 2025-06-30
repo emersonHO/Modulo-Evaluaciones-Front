@@ -79,7 +79,7 @@ export const CompetenciasDialog = ({
                 <Chip
                   label={option.nombre}
                   {...getTagProps({ index })}
-                  key={option.id}
+                  key={`${option.id}-${index}-${option.nombre}`}
                 />
               ))
             }
