@@ -1,10 +1,14 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import AsociarComponentesPage from "../pages/AsociarComponentesPage";
-import { CompetenciasPage } from "../pages/CompetenciasPage";
+import AsociarComponentesPage from 
+"../pages/componente-competencia/componente/AsociarComponentesPage";
+import { CompetenciasPage } from 
+"../pages/componente-competencia/componente/CompetenciasPage";
 import Formulas from "../pages/formulas";
 import AsignarFormula from "../pages/asignarformula";
-import MainEval from "../pages/EvalHome";
+import ComponentePage from "../pages/grupocomponente"; 
 import CrearRubrica from "../pages/crearrubrica"
+
+import MainEval from "../pages/EvalHome";
 
 export const EvaluacionesRoutes = () => {
   const location = useLocation();
@@ -17,6 +21,7 @@ export const EvaluacionesRoutes = () => {
       <Route path="competencias" element={<CompetenciasPage />} />
       <Route path='formulas' element={<Formulas/>}/>
       <Route path="asignarformula" element={<AsignarFormula/>}/>
+      <Route path="componentes" element={<ComponentePage />} /> 
       <Route path="/" element={<MainEval/>}/>
       <Route path="crearrubrica" element={<CrearRubrica/>}/>
     </Routes>
