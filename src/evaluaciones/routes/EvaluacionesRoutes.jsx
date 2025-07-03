@@ -5,6 +5,7 @@ import Formulas from "../pages/formulas";
 import AsignarFormula from "../pages/asignarformula";
 import MainEval from "../pages/EvalHome";
 import CrearRubrica from "../pages/crearrubrica"
+import ArbolCompetenciaDashboard from "../pages/ArbolCompetenciaDashboard";
 
 export const EvaluacionesRoutes = () => {
   const location = useLocation();
@@ -19,6 +20,7 @@ export const EvaluacionesRoutes = () => {
       <Route path="asignarformula" element={<AsignarFormula/>}/>
       <Route path="/" element={<MainEval/>}/>
       <Route path="crearrubrica" element={<CrearRubrica/>}/>
+      <Route path="arbol de competencias y componentes" element={<ArbolCompetenciaDashboard />} />
     </Routes>
   );
 };
