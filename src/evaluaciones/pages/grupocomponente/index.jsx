@@ -1,20 +1,16 @@
-import { Button } from "@mui/material";
+import React from "react";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from "react-router-dom";
+import { Button } from "react-bootstrap";
 import GrupoComponente from "./sections/grupoComponente";
 
 export default function ComponentePage() {
     const navigate = useNavigate();
 
-    return (
-        <main>
-            <Button 
-                variant="contained" 
-                onClick={() => navigate("../")}
-                sx={{ mb: 2 }}
-            >
-                Ir a inicio
-            </Button>
-            <GrupoComponente/>
-        </main>
-    );
+    return(
+            <main>
+                <Button onClick={()=> navigate("../")}>Ir a inicio</Button>
+                <GrupoComponente/>
+            </main>
+        );
 }

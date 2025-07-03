@@ -70,7 +70,7 @@ export const CompetenciasDialog = ({
               <TextField
                 {...params}
                 label="Buscar y seleccionar competencias"
-                placeholder="Escribe al menos 1 letra..."
+                placeholder="Escribe al menos 3 letras..."
                 helperText="Puedes buscar y seleccionar varias competencias"
               />
             )}
