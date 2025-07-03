@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
+import { useDispatch } from "react-redux";
+import { updateFormula} from "../../../actions/evalThunks";
 
 const applicableLabels = [
     "Usa Pesos",
@@ -21,6 +22,7 @@ export default function FormulaViewer({ show, handleClose, formula, funciones })
     const [isEditing, setIsEditing] = useState(false);
     const [editableFormula, setEditableFormula] = useState(null);
     const [funcion, setFuncion]= useState(1);
+    const dispatch= useDispatch();
 
     useEffect(() => {
         if (formula){
@@ -59,10 +61,7 @@ export default function FormulaViewer({ show, handleClose, formula, funciones })
     };
 
     const handleSave = () => {
-        const payload = {
-            ...editableFormula,
-        };
-        axios.put(`http://localhost:8080/api/formula/${editableFormula.id}`, payload)
+        dispatch(updateFormula(editableFormula))
             .then(() => {
                 setIsEditing(false);
                 handleClose();
@@ -103,7 +102,7 @@ export default function FormulaViewer({ show, handleClose, formula, funciones })
                 <hr />
                     <p><strong>ID de la Institución:</strong> {editableFormula.institucionId}</p>
                     <p><strong>ID del departamento:</strong> {editableFormula.departamentoId}</p>
-                    <p><strong>ID del instituto:</strong> {editableFormula.institutoId}</p>
+                    <p><strong>ID del instituto:</strong> {editableFormula.institutoid}</p>
                 <hr />
                 <Form>
                     <Form.Label><strong>Función asociada: </strong></Form.Label>
@@ -132,13 +131,15 @@ export default function FormulaViewer({ show, handleClose, formula, funciones })
             <Modal.Footer>
                 {isEditing ? (
                     <>
-                        <Button variant="secondary" onClick={cancelEdit}>Cancelar</Button>
                         <Button variant="primary" onClick={handleSave}>Guardar cambios</Button>
+                        <Button variant="secondary" onClick={cancelEdit}>Cancelar</Button>
                     </>
                 ) : (
-                    <Button variant="warning" onClick={toggleEdit}>Editar</Button>
+                    <>
+                        <Button variant="warning" onClick={toggleEdit}>Editar</Button>
+                        <Button variant="outline-secondary" onClick={handleClose}>Cerrar</Button>
+                    </>
                 )}
-                <Button variant="outline-secondary" onClick={handleClose}>Cerrar</Button>
             </Modal.Footer>
         </Modal>
     );

@@ -1,18 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Card, Table, Button, Dropdown } from "react-bootstrap";
-import axios from "axios";
 import AddFormula from './addFormula';
 import DeleteFormula from './deleteFormula';
 import ViewFormula from './viewFormula';
-import {
-    iniciaCargaFormulas,
-    cargaFormulas
-} from "../../../slices/formulaSlice";
-import {
-    iniciaCargaFunciones,
-    cargaFunciones
-} from "../../../slices/funcionSlice";
+import { getFormulas, postFormula, deleteFormula, getFunciones } from "../../../actions/evalThunks";
 
 const applicables = ["usapesos", "restamenor", "nummenor", "restamayor", "nummayor", "copiaprimero", "copiamenor", "copiamayor", "redondeo"];
 
@@ -41,31 +33,8 @@ export default function GrupoFormulas() {
 
     useEffect(() => {
         const fetchFormulas = async () => {
-            dispatch(iniciaCargaFormulas());
             try {
-                const res = await axios.get("http://localhost:8080/api/formula");
-                dispatch(cargaFormulas({
-                    formulas: res.data.map(f => ({
-                        id: f.id,
-                        codigo: f.codigo,
-                        descripcion: f.descripcion,
-                        formula: f.formula,
-                        estado: f.estado,
-                        usaPesos: f.usaPesos,
-                        restaMenor: f.restaMenor,
-                        numMenor: f.numMenor,
-                        restaMayor: f.restaMayor,
-                        numMayor: f.numMayor,
-                        copiaPrimero: f.copiaPrimero,
-                        copiaMenor: f.copiaMenor,
-                        copiaMayor: f.copiaMayor,
-                        redondeo: f.redondeo,
-                        institucionId: f.institucionId,
-                        departamentoId: f.departamentoId,
-                        funcionId: f.funcionId,
-                        institutoId: f.institutoId
-                    }))
-                }));
+                dispatch(getFormulas());
             } catch (err) {
                 console.error("Error cargando fórmulas:", err);
             }
@@ -76,18 +45,8 @@ export default function GrupoFormulas() {
 
     useEffect(() => {
         const fetchFunciones = async () => {
-            dispatch(iniciaCargaFunciones());
             try {
-                const res = await axios.get("http://localhost:8080/api/funcion");
-                dispatch(cargaFunciones({
-                    funciones: res.data.map(fu => ({
-                        id: fu.id,
-                        nombre: fu.nombre,
-                        descripcion: fu.descripcion,
-                        funsql: fu.funsql,
-                        estado: fu.estado
-                    }))
-                }));
+                dispatch(getFunciones());
             } catch (err) {
                 console.error("Error cargando funciones:", err);
             }
@@ -129,7 +88,6 @@ export default function GrupoFormulas() {
             estado: newformula.estado,
             institucionId: newformula.institucionId,
             departamentoId: newformula.departamentoId,
-            institutoId: newformula.institutoId,
             usaPesos: newformula.applicable[0] ? 1 : 0,
             restaMenor: newformula.applicable[1] ? 1 : 0,
             numMenor: newformula.applicable[2] ? 1 : 0,
@@ -138,15 +96,11 @@ export default function GrupoFormulas() {
             copiaPrimero: newformula.applicable[5] ? 1 : 0,
             copiaMenor: newformula.applicable[6] ? 1 : 0,
             copiaMayor: newformula.applicable[7] ? 1 : 0,
-            redondeo: newformula.applicable[8] ? 1 : 0
+            redondeo: newformula.applicable[8] ? 1 : 0,
+            institutoId: newformula.institutoId
         };
-
-        axios.post("http://localhost:8080/api/formula", payload)
-            .then(res => {
-                dispatch(cargaFormulas({ formulas: [...formulas, res.data] }));
-                handleAddClose();
-            })
-            .catch(err => console.error("Error al guardar fórmula:", err));
+        dispatch(postFormula(payload));
+        handleAddClose();
     };
 
     const handleCheckboxChange = (index) => {
@@ -179,14 +133,8 @@ export default function GrupoFormulas() {
     };
 
     const handleDelete = (id) => {
-        axios.delete(`http://localhost:8080/api/formula/${id}`)
-            .then(() => {
-                dispatch(cargaFormulas({
-                    formulas: formulas.filter(f => f.id !== id)
-                }));
-                handleDeleteClose();
-            })
-            .catch(err => console.error("Error al eliminar fórmula:", err));
+        dispatch(deleteFormula(id));
+        handleDeleteClose();
     };
 
     return (

@@ -1,9 +1,12 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import AsociarComponentesPage from "../pages/componente-competencia/componente/AsociarComponentesPage";
-import { CompetenciasPage } from "../pages/componente-competencia/componente/CompetenciasPage";
+import AsociarComponentesPage from 
+"../pages/componente-competencia/componente/AsociarComponentesPage";
+import { CompetenciasPage } from 
+"../pages/componente-competencia/componente/CompetenciasPage";
 import Formulas from "../pages/formulas";
 import AsignarFormula from "../pages/asignarformula";
-import ComponentePage from "../pages/grupocomponente";
+import ComponentePage from "../pages/grupocomponente"; 
+import CrearRubrica from "../pages/crearrubrica"
 
 import MainEval from "../pages/EvalHome";
 
@@ -16,10 +19,11 @@ export const EvaluacionesRoutes = () => {
     <Routes>
       <Route path="componente" element={<AsociarComponentesPage />} />
       <Route path="competencias" element={<CompetenciasPage />} />
-      <Route path="formulas" element={<Formulas />} />
-      <Route path="asignarformula" element={<AsignarFormula />} />
-      <Route path="componentes" element={<ComponentePage />} />
-      <Route path="/" element={<MainEval />} />
+      <Route path='formulas' element={<Formulas/>}/>
+      <Route path="asignarformula" element={<AsignarFormula/>}/>
+      <Route path="componentes" element={<ComponentePage />} /> 
+      <Route path="/" element={<MainEval/>}/>
+      <Route path="crearrubrica" element={<CrearRubrica/>}/>
     </Routes>
   );
 };

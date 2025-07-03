@@ -4,29 +4,22 @@ import {
   CardContent,
   Typography,
   Box,
+  Chip,
   Divider,
   IconButton,
   Menu,
   MenuItem,
+  Stack,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PropTypes from "prop-types";
-import { ConfirmarEliminacionDialog } from "./dialogs/ConfirmarEliminacionDialog";
-import AddIcon from "@mui/icons-material/Add";
-import Fab from "@mui/material/Fab";
-import SaveIcon from "@mui/icons-material/Save";
-import Tooltip from "@mui/material/Tooltip";
 
 export function ComponenteCompetenciaCard({
   componente,
   onEdit,
   onDelete,
   onAddCompetencias,
-  onSave,
 }) {
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-
   if (!componente) {
     return (
       <Box
@@ -45,159 +38,117 @@ export function ComponenteCompetenciaCard({
     );
   }
 
-  const handleDeleteClick = () => {
-    setOpenDeleteDialog(true);
-    setAnchorEl(null);
-  };
-
-  const handleConfirmDelete = () => {
-    onDelete(componente.descripcion);
-    setOpenDeleteDialog(false);
-  };
-
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleEditClick = () => {
-    onEdit(componente);
-    handleMenuClose();
-  };
-
   return (
-    <Card
-      elevation={2}
-      sx={{
-        p: 2,
-        borderRadius: 2,
-        "&:hover": {
-          boxShadow: 4,
-          transition: "all 0.3s ease-in-out",
-        },
-      }}
-    >
+    <Card elevation={2} sx={{ borderRadius: 2, height: "100%" }}>
       <CardContent>
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
+            mb: 2,
           }}
         >
           <Box>
-            <Typography variant="h6" color="primary" gutterBottom>
+            <Typography variant="h6" color="primary" sx={{ mb: 0.5 }}>
               {componente.descripcion}
             </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+                Peso:
+              </Typography>
+              <Chip label={`${componente.peso || 0}%`} size="small" />
+            </Box>
           </Box>
-          <IconButton onClick={handleMenuClick} size="small">
-            <MoreVertIcon />
-          </IconButton>
+          <MenuOpciones
+            onEdit={() => onEdit(componente)}
+            onDelete={() => onDelete(componente.descripcion)}
+          />
         </Box>
-
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-          PaperProps={{
-            elevation: 3,
-            sx: {
-              borderRadius: 2,
-              mt: 1,
-            },
-          }}
-        >
-          <MenuItem onClick={handleEditClick}>Editar</MenuItem>
-          <MenuItem onClick={handleDeleteClick}>Eliminar</MenuItem>
-        </Menu>
-
         <Divider sx={{ my: 2 }} />
-
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-            Competencias asociadas:
+        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          Competencias asociadas:
+        </Typography>
+        {componente.competencias && componente.competencias.length > 0 ? (
+          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            {componente.competencias.map((comp) => (
+              <Chip
+                key={comp.id}
+                label={comp.nombre}
+                size="small"
+                sx={{ m: 0.5 }}
+              />
+            ))}
+          </Stack>
+        ) : (
+          <Typography variant="body2" color="text.secondary" fontStyle="italic">
+            Sin competencias asociadas
           </Typography>
-          {componente.competencias && componente.competencias.length > 0 ? (
-            <ul style={{ paddingLeft: 16, margin: 0 }}>
-              {componente.competencias.map((competencia, index) => (
-                <li
-                  key={`${competencia.id}-${index}-${competencia.descripcion}`}
-                  style={{
-                    background: "#f1f1f1",
-                    borderRadius: 12,
-                    marginBottom: 8,
-                    padding: "6px 16px",
-                    listStyle: "none",
-                    fontSize: 15,
-                  }}
-                >
-                  {competencia.descripcion}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              No hay competencias asociadas
-            </Typography>
-          )}
-        </Box>
-
-        <Box
-          sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 2 }}
-        >
-          <Tooltip title="Agregar competencias" arrow>
-            <Fab
-              color="primary"
-              aria-label="Agregar competencias"
-              size="small"
-              onClick={() => onAddCompetencias(componente)}
-              sx={{
-                backgroundColor: "#1976d2",
-                color: "#fff",
-                "&:hover": { backgroundColor: "#115293" },
-              }}
-            >
-              <AddIcon />
-            </Fab>
-          </Tooltip>
-          <Tooltip title="Guardar cambios" arrow>
-            <Fab
-              color="success"
-              aria-label="Guardar competencias"
-              size="small"
-              onClick={() => onSave(componente)}
-              sx={{
-                backgroundColor: "#388e3c",
-                color: "#fff",
-                "&:hover": { backgroundColor: "#256029" },
-              }}
-            >
-              <SaveIcon />
-            </Fab>
-          </Tooltip>
+        )}
+        <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+          <Chip
+            label={"+ ASOCIAR"}
+            color="primary"
+            clickable
+            onClick={() => onAddCompetencias(componente)}
+            sx={{ fontWeight: 600, letterSpacing: 1 }}
+          />
         </Box>
       </CardContent>
-
-      <ConfirmarEliminacionDialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        onConfirm={handleConfirmDelete}
-        title="¿Está seguro de eliminar este componente con sus competencias asociadas?"
-        message="Esta acción no se puede deshacer."
-      />
     </Card>
   );
 }
+
+function MenuOpciones({ onEdit, onDelete }) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+
+  return (
+    <>
+      <IconButton onClick={handleMenuOpen} size="small">
+        <MoreVertIcon />
+      </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleMenuClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+            onEdit();
+          }}
+        >
+          Editar
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+            onDelete();
+          }}
+        >
+          Eliminar
+        </MenuItem>
+      </Menu>
+    </>
+  );
+}
+
+MenuOpciones.propTypes = {
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+};
 
 ComponenteCompetenciaCard.propTypes = {
   componente: PropTypes.object,
   onEdit: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onAddCompetencias: PropTypes.func.isRequired,
-  onSave: PropTypes.func.isRequired,
 };
 
 export default ComponenteCompetenciaCard;
