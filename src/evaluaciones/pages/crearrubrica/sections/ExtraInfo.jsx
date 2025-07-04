@@ -22,10 +22,17 @@ const temporal = [
   { name: "comp3", id: 3 }
 ];
 
-export default function ExtraInfo() {
-  const navigate = useNavigate();
+export default function ExtraInfo({ rubricaInfo, setRubricaInfo, onGuardar }) {
   const [selectedComp, setSelectedComp] = useState(null);
   const [selectedCur, setSelectedCur] = useState(null);
+
+  const handleCompChange = (newValue) => {
+    setSelectedComp(newValue);
+    setRubricaInfo(prev => ({
+      ...prev,
+      componenteId: newValue?.id || null,
+    }));
+  };
 
   return (
     <section>
@@ -34,7 +41,7 @@ export default function ExtraInfo() {
             label="Componente asociado"
             options={temporal}
             value={selectedComp}
-            onChange={setSelectedComp}
+            onChange={handleCompChange}
           />
           <AutocompleteSelect
             label="Curso asociado"
@@ -42,7 +49,7 @@ export default function ExtraInfo() {
             value={selectedCur}
             onChange={setSelectedCur}
           />
-          <Button>Crear Rubrica</Button>
+          <Button onClick={onGuardar}>Crear Rubrica</Button>
         </div>
     </section>
   );

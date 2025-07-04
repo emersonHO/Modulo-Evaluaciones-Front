@@ -16,8 +16,7 @@ function AutocompleteSelect({ label, options, value, onChange }) {
   );
 }
 
-export default function MainInfo() {
-  const navigate = useNavigate();
+export default function MainInfo({ rubricaInfo, setRubricaInfo }) {
   const [rubricaTitle, setRubricaTitle]= useState("");
   const [rubricaDesc, setRubricaDesc]= useState("");
 
@@ -30,14 +29,14 @@ export default function MainInfo() {
         <TextField
             label="Nombre de la rúbrica"
             variant="outlined"
-            value={rubricaTitle}
-            onChange={(e)=> setRubricaTitle(e.target.value)}
+            value={rubricaInfo.nombre}
+            onChange={(e) => setRubricaInfo(prev => ({ ...prev, nombre: e.target.value }))}
         />
         <TextField
             label="Descripción de la rúbrica"
             variant="outlined"
-            value={rubricaDesc}
-            onChange={(e)=> setRubricaDesc(e.target.value)}
+            value={rubricaInfo.descripcion}
+            onChange={(e) => setRubricaInfo(prev => ({ ...prev, descripcion: e.target.value }))}
         />
       </div>
     </section>
