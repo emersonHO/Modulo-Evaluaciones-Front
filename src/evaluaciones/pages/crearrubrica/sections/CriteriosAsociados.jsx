@@ -1,4 +1,4 @@
-import { TextField, Button } from "@mui/material";
+import { TextField } from "@mui/material";
 import { useState } from "react";
 
 export default function CriteriosAsociados({ rubricaInfo, setRubricaInfo }) {
@@ -67,12 +67,14 @@ export default function CriteriosAsociados({ rubricaInfo, setRubricaInfo }) {
                             value={nivel.puntajemax}
                             onChange={(e) => setNivel({ ...nivel, puntajemax: e.target.value })}
                         />
-                        <Button className="criterio-more">+</Button>
+                        <button className="criterio-more">+</button>
                     </div>
 
-                    <Button>
+                    <button
+                        className="btn-añadir-criterio"
+                    >
                         Añadir un criterio
-                    </Button>
+                    </button>
                 </div>
             </div>
         </section>

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Button, Autocomplete, TextField } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import {Autocomplete, TextField } from "@mui/material";
 
 function AutocompleteSelect({ label, options, value, onChange }) {
   return (
@@ -49,7 +48,12 @@ export default function ExtraInfo({ rubricaInfo, setRubricaInfo, onGuardar }) {
             value={selectedCur}
             onChange={setSelectedCur}
           />
-          <Button onClick={onGuardar}>Crear Rubrica</Button>
+          <button 
+            className="btn-crear-rubrica"
+            onClick={onGuardar}
+            >
+              Crear Rubrica
+            </button>
         </div>
     </section>
   );

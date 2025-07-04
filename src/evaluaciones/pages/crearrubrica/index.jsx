@@ -1,6 +1,5 @@
-import React from "react";
 import { useState } from "react";
-import { Card, CardActions, CardContent, Typography, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import MainInfo from "./sections/MainInfo";
