@@ -148,3 +148,22 @@ export const postRubrica = (rubricaData) => {
         }
     };
 };
+
+export const getArbol = () => {
+
+    return async(dispatch, getState) => {
+        const token= localStorage.getItem("token")
+        console.log("TOKEN actual: ", token)
+        dispatch( iniciaCargaArbol() );
+        const resp = await fetch(`http://localhost:8080/api/competencias/{competenciaId}/arbol-componentes`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        const data = await resp.json();
+        
+        console.log( data );
+        dispatch( cargaArbol( { formulas: data } ) );
+    }
+}
