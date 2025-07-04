@@ -32,7 +32,7 @@ export default function CriteriosAsociados({ rubricaInfo, setRubricaInfo }) {
     return (
         <section>
             <div>
-                <h3>Crear criterios para la rúbrica</h3>
+                <h3 className="h3-text">Crear criterios para la rúbrica</h3>
                 <div className="criterios-rubrica-container">
 
                     <div className="fila-desc">
