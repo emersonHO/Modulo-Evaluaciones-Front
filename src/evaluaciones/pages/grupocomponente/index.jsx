@@ -1,7 +1,5 @@
 import React from "react";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from "react-router-dom";
-import { Button } from "react-bootstrap";
 import GrupoComponente from "./sections/grupoComponente";
 
 export default function ComponentePage() {
@@ -9,7 +7,7 @@ export default function ComponentePage() {
 
     return(
             <main>
-                <Button onClick={()=> navigate("../")}>Ir a inicio</Button>
+                <button onClick={()=> navigate("../")}>Ir a inicio</button>
                 <GrupoComponente/>
             </main>
         );

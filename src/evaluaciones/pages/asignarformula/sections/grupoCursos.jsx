@@ -1,242 +1,192 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Card, Table, Button, Form, Modal } from "react-bootstrap";
-import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
 import {
-    iniciaCargaFormulas,
-    cargaFormulas
-} from "../../../slices/formulaSlice";
+  Button, Card, CardContent, Typography, Table, TableHead, TableBody, TableRow, TableCell, Select, MenuItem,
+  Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControl, InputLabel
+} from "@mui/material";
+import { getFormulas, getComponentes, updateComponente, postComponente } from "../../../actions/evalThunks";
 
 export default function GrupoCursos() {
-    const dispatch = useDispatch();
-    const { formulas } = useSelector((state) => state.formula);
-    const [editingRowId, setEditingRowId] = useState(null);
-    const [componentes, setComponentes] = useState([]);
-    const [showModal, setShowModal] = useState(false);
-    const [nuevoComponente, setNuevoComponente] = useState({
-        codigo: "",
-        descripcion: "",
-        peso: "",
-        formulaid: ""
-    });
-    const navigate = useNavigate();
-    const location = useLocation();
+  const dispatch = useDispatch();
+  const { formulas } = useSelector((state) => state.formula);
+  const [componentes, setComponentes] = useState([]);
+  const [editingRowId, setEditingRowId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [nuevoComponente, setNuevoComponente] = useState({
+    codigo: "",
+    descripcion: "",
+    peso: "",
+    formulaid: ""
+  });
 
-    const handleFormulaChange = (event, compId) => {
-        const selectedId = parseInt(event.target.value);
-        setComponentes(prev =>
-            prev.map(comp =>
-                comp.id === compId ? { ...comp, formulaid: selectedId } : comp
-            )
-        );
-    };
-
-    const toggleEdit = (id) => setEditingRowId(id);
-    const cancelEdit = () => setEditingRowId(null);
-
-    useEffect(() => {
-        const fetchFormulas = async () => {
-            dispatch(iniciaCargaFormulas());
-            try {
-                const res = await axios.get("http://localhost:8080/api/formula");
-                dispatch(cargaFormulas({
-                    formulas: res.data.map(f => ({
-                        id: f.id,
-                        descripcion: f.descripcion
-                    }))
-                }));
-            } catch (err) {
-                console.error("Error cargando fórmulas:", err);
-            }
-        };
-        fetchFormulas();
-    }, [dispatch]);
-
-    useEffect(() => {
-        const fetchComponentes = async () => {
-            try {
-                const res = await axios.get("http://localhost:8080/componentes");
-                setComponentes(res.data);
-            } catch (err) {
-                console.error("Error cargando componentes:", err);
-            }
-        };
-        fetchComponentes();
-    }, []);
-
-    const handleSave = async () => {
-        const componenteEditado = componentes.find(c => c.id === editingRowId);
-        if (!componenteEditado) return;
-
-        try {
-            await axios.put(`http://localhost:8080/componentes/${componenteEditado.id}`, componenteEditado, {
-                formulaid: componenteEditado.formulaid
-            });
-            setEditingRowId(null);
-        } catch (error) {
-            console.error("Error al guardar el componente:", error);
-        }
-    };
-
-    // --- NUEVO: Funciones para el modal de añadir componente ---
-    const handleShowModal = () => setShowModal(true);
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setNuevoComponente({
-            codigo: "",
-            descripcion: "",
-            peso: "",
-            formulaid: ""
-        });
-    };
-
-    const handleNuevoChange = (e) => {
-        const { name, value } = e.target;
-        setNuevoComponente(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleAgregarComponente = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await axios.post("http://localhost:8080/componentes", nuevoComponente);
-            setComponentes(prev => [...prev, res.data]);
-            handleCloseModal();
-        } catch (error) {
-            console.error("Error al agregar componente:", error);
-        }
-    };
-
-    return (
-        <section>
-            <Card className="m-4 p-2">
-                <Card.Title>Curso: </Card.Title>
-                <Card.Body>
-                    <Table>
-                        <thead>
-                            <tr className="text-center">
-                                <th>Codigo</th>
-                                <th>Descripción del componente</th>
-                                <th>Peso del componente</th>
-                                <th>Fórmula asociada</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody className="text-center">
-                            {componentes.map((comp) => (
-                                <tr key={comp.id}>
-                                    <td>{comp.codigo}</td>
-                                    <td>{comp.descripcion}</td>
-                                    <td>{comp.peso}</td>
-                                    <td>
-                                        <Form>
-                                            <Form.Select
-                                                value={comp.formulaid}
-                                                onChange={(e) => handleFormulaChange(e, comp.id)}
-                                                disabled={editingRowId !== comp.id}
-                                            >
-                                                {formulas.map((f) => (
-                                                    <option key={f.id} value={f.id}>
-                                                        {f.descripcion}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                        </Form>
-                                    </td>
-                                    <td>
-                                        {editingRowId === comp.id ? (
-                                            <>
-                                                <Button variant="success" size="sm" onClick={handleSave}>
-                                                    Guardar
-                                                </Button>{' '}
-                                                <Button variant="secondary" size="sm" onClick={cancelEdit}>
-                                                    Cancelar
-                                                </Button>
-                                            </>
-                                        ) : (
-                                            <Button size="sm" onClick={() => toggleEdit(comp.id)}>
-                                                Editar
-                                            </Button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                    <div className="d-flex align-items-center mt-3">
-                        <Button>Añadir fórmula</Button>
-                        <span style={{ marginLeft: "1rem" }}>
-                            <Button variant="primary" onClick={handleShowModal}>Añadir componente</Button>
-                        </span>
-                    </div>
-                </Card.Body>
-            </Card>
-
-            {/* Modal para añadir componente */}
-            <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Añadir nuevo componente</Modal.Title>
-                </Modal.Header>
-                <Form onSubmit={handleAgregarComponente}>
-                    <Modal.Body>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Código</Form.Label>
-                            <Form.Control
-                                name="codigo"
-                                value={nuevoComponente.codigo}
-                                onChange={handleNuevoChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Descripción</Form.Label>
-                            <Form.Control
-                                name="descripcion"
-                                value={nuevoComponente.descripcion}
-                                onChange={handleNuevoChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Peso</Form.Label>
-                            <Form.Control
-                                name="peso"
-                                type="number"
-                                value={nuevoComponente.peso}
-                                onChange={handleNuevoChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Fórmula asociada</Form.Label>
-                            <Form.Select
-                                name="formulaid"
-                                value={nuevoComponente.formulaid}
-                                onChange={handleNuevoChange}
-                                required
-                            >
-                                <option value="">Seleccione una fórmula</option>
-                                {formulas.map((f) => (
-                                    <option key={f.id} value={f.id}>
-                                        {f.descripcion}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseModal}>
-                            Cancelar
-                        </Button>
-                        <Button variant="primary" type="submit">
-                            Guardar
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
-        </section>
+  const handleFormulaChange = (event, compId) => {
+    const selectedId = parseInt(event.target.value);
+    setComponentes(prev =>
+      prev.map(comp =>
+        comp.id === compId ? { ...comp, formulaid: selectedId } : comp
+      )
     );
+  };
+
+  const toggleEdit = (id) => setEditingRowId(id);
+  const cancelEdit = () => setEditingRowId(null);
+
+  const handleSave = async () => {
+    const componenteEditado = componentes.find(c => c.id === editingRowId);
+    if (!componenteEditado) return;
+    await dispatch(updateComponente(componenteEditado));
+    setEditingRowId(null);
+    dispatch(getComponentes()).then(res => setComponentes(res.payload));
+  };
+
+  useEffect(() => {
+    dispatch(getFormulas());
+    dispatch(getComponentes()).then(res => setComponentes(res.payload));
+  }, [dispatch]);
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setNuevoComponente({
+      codigo: "",
+      descripcion: "",
+      peso: "",
+      formulaid: ""
+    });
+  };
+
+  const handleNuevoChange = (e) => {
+    const { name, value } = e.target;
+    setNuevoComponente(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleAgregarComponente = async (e) => {
+    e.preventDefault();
+    await dispatch(postComponente(nuevoComponente));
+    dispatch(getComponentes()).then(res => setComponentes(res.payload));
+    handleCloseModal();
+  };
+
+  return (
+    <section>
+      <Card sx={{ margin: 4, padding: 2 }}>
+        <CardContent>
+          <Typography variant="h6">Curso:</Typography>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell align="center">Código</TableCell>
+                <TableCell align="center">Descripción</TableCell>
+                <TableCell align="center">Peso</TableCell>
+                <TableCell align="center">Fórmula asociada</TableCell>
+                <TableCell align="center">Acciones</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {componentes.map((comp) => (
+                <TableRow key={comp.id}>
+                  <TableCell align="center">{comp.codigo}</TableCell>
+                  <TableCell align="center">{comp.descripcion}</TableCell>
+                  <TableCell align="center">{comp.peso}</TableCell>
+                  <TableCell align="center">
+                    <FormControl fullWidth>
+                      <Select
+                        value={comp.formulaid}
+                        onChange={(e) => handleFormulaChange(e, comp.id)}
+                        disabled={editingRowId !== comp.id}
+                      >
+                        {formulas.map((f) => (
+                          <MenuItem key={f.id} value={f.id}>
+                            {f.descripcion}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </TableCell>
+                  <TableCell align="center">
+                    {editingRowId === comp.id ? (
+                      <>
+                        <Button variant="contained" color="success" size="small" onClick={handleSave}>
+                          Guardar
+                        </Button>{" "}
+                        <Button variant="outlined" size="small" onClick={cancelEdit}>
+                          Cancelar
+                        </Button>
+                      </>
+                    ) : (
+                      <Button size="small" variant="contained" onClick={() => toggleEdit(comp.id)}>
+                        Editar
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div style={{ display: "flex", marginTop: "1rem", gap: "1rem" }}>
+            <Button variant="outlined">Añadir fórmula</Button>
+            <Button variant="contained" onClick={handleShowModal}>
+              Añadir componente
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Modal */}
+      <Dialog open={showModal} onClose={handleCloseModal}>
+        <DialogTitle>Añadir nuevo componente</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Código"
+            name="codigo"
+            fullWidth
+            value={nuevoComponente.codigo}
+            onChange={handleNuevoChange}
+          />
+          <TextField
+            margin="dense"
+            label="Descripción"
+            name="descripcion"
+            fullWidth
+            value={nuevoComponente.descripcion}
+            onChange={handleNuevoChange}
+          />
+          <TextField
+            margin="dense"
+            label="Peso"
+            name="peso"
+            type="number"
+            fullWidth
+            value={nuevoComponente.peso}
+            onChange={handleNuevoChange}
+          />
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel id="formula-label">Fórmula</InputLabel>
+            <Select
+              labelId="formula-label"
+              name="formulaid"
+              value={nuevoComponente.formulaid}
+              onChange={handleNuevoChange}
+              label="Fórmula"
+            >
+              <MenuItem value="">Seleccione una fórmula</MenuItem>
+              {formulas.map((f) => (
+                <MenuItem key={f.id} value={f.id}>
+                  {f.descripcion}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal}>Cancelar</Button>
+          <Button onClick={handleAgregarComponente}>Guardar</Button>
+        </DialogActions>
+      </Dialog>
+    </section>
+  );
 }

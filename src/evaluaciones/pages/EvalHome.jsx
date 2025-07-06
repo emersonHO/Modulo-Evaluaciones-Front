@@ -1,5 +1,4 @@
 import React from "react";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, CardActions, CardContent, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "../views/evalHomeStyles.css";

@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import { Card, Table, Button, Dropdown } from "react-bootstrap";
+import {
+    Typography,
+    Button,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    TableContainer,
+    Paper,
+    Box
+} from "@mui/material";
 import AddComponente from "./addComponente";
 import ComponenteViewer from "./viewComponente";
 
@@ -10,11 +20,12 @@ export default function GrupoComponentes() {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
     const [selectedComponente, setSelectedComponente] = useState(null);
+
     const [newComponente, setNewComponente] = useState({
         codigo: "",
         nombre: "",
         evaluacionid: "",
-        peso: "",        
+        peso: "",
         orden: "",
         estado: "",
         padreid: "",
@@ -45,9 +56,11 @@ export default function GrupoComponentes() {
         axios.post("http://localhost:8080/api/componente", newComponente)
             .then(() => {
                 setShowAddModal(false);
-                setNewComponente({ codigo: "", nombre: "", evaluacionid: "", peso: "", orden: "",
-        estado: "", padreid: "", nivel: "", institucionalid: "", calculado: "", departamentoid: "", 
-        formulaid: "", curso_id: "" });
+                setNewComponente({
+                    codigo: "", nombre: "", evaluacionid: "", peso: "", orden: "",
+                    estado: "", padreid: "", nivel: "", institucionalid: "", calculado: "",
+                    departamentoid: "", formulaid: "", curso_id: ""
+                });
                 fetchComponentes();
             })
             .catch(err => console.error("Error al guardar el componente:", err));
@@ -59,35 +72,51 @@ export default function GrupoComponentes() {
     };
 
     return (
-        <div className="container mt-4">
-            <h3>Gestión de Componentes</h3>
-            <Button className="mb-3" onClick={() => setShowAddModal(true)}>
+        <Box sx={{ p: 4 }}>
+            <Typography variant="h5" gutterBottom>
+                Gestión de Componentes
+            </Typography>
+
+            <Button
+                variant="contained"
+                color="primary"
+                sx={{ mb: 2 }}
+                onClick={() => setShowAddModal(true)}
+            >
                 Añadir Componente
             </Button>
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {componentes.map(comp => (
-                        <tr key={comp.id}>
-                            <td>{comp.codigo}</td>
-                            <td>{comp.nombre}</td>
-                            <td>{comp.descripcion}</td>
-                            <td>
-                                <Button variant="info" size="sm" onClick={() => openViewer(comp)}>
-                                    Ver
-                                </Button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </Table>
+
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell><strong>Código</strong></TableCell>
+                            <TableCell><strong>Nombre</strong></TableCell>
+                            <TableCell><strong>Descripción</strong></TableCell>
+                            <TableCell><strong>Acciones</strong></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {componentes.map((comp) => (
+                            <TableRow key={comp.id}>
+                                <TableCell>{comp.codigo}</TableCell>
+                                <TableCell>{comp.nombre}</TableCell>
+                                <TableCell>{comp.descripcion}</TableCell>
+                                <TableCell>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        color="info"
+                                        onClick={() => openViewer(comp)}
+                                    >
+                                        Ver
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
 
             <AddComponente
                 show={showAddModal}
@@ -102,6 +131,6 @@ export default function GrupoComponentes() {
                 handleClose={() => setShowViewModal(false)}
                 componente={selectedComponente}
             />
-        </div>
+        </Box>
     );
 }

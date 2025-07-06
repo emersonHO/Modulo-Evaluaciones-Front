@@ -148,3 +148,42 @@ export const postRubrica = (rubricaData) => {
         }
     };
 };
+
+export const getComponentes = () => {
+  return async () => {
+    const token = localStorage.getItem("token");
+    const resp = await fetch("http://localhost:8080/componentes", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await resp.json();
+    return { payload: data };
+  };
+};
+
+export const updateComponente = (componente) => {
+  return async () => {
+    const token = localStorage.getItem("token");
+    await fetch(`http://localhost:8080/componentes/${componente.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(componente)
+    });
+  };
+};
+
+export const postComponente = (nuevoComponente) => {
+  return async () => {
+    const token = localStorage.getItem("token");
+    await fetch("http://localhost:8080/componentes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(nuevoComponente)
+    });
+  };
+};

@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField,
+    Stack
+} from "@mui/material";
 import axios from "axios";
 
 export default function ComponenteViewer({ show, handleClose, componente }) {
@@ -14,6 +22,7 @@ export default function ComponenteViewer({ show, handleClose, componente }) {
     }, [componente]);
 
     const toggleEdit = () => setIsEditing(true);
+
     const cancelEdit = () => {
         setEditableComponente(componente);
         setIsEditing(false);
@@ -21,17 +30,18 @@ export default function ComponenteViewer({ show, handleClose, componente }) {
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setEditableComponente(prev => ({ ...prev, [name]: value }));
+        setEditableComponente((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleSave = () => {
-        axios.put(`http://localhost:8080/api/componente/${editableComponente.id}`, editableComponente)
+        axios
+            .put(`http://localhost:8080/api/componente/${editableComponente.id}`, editableComponente)
             .then(() => {
                 setIsEditing(false);
                 handleClose();
                 window.location.reload();
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error("Error al actualizar el componente:", err);
             });
     };
@@ -39,55 +49,59 @@ export default function ComponenteViewer({ show, handleClose, componente }) {
     if (!editableComponente) return null;
 
     return (
-        <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>{isEditing ? "Editar componente" : "Detalle del componente"}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group>
-                        <Form.Label>Código</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="codigo"
-                            value={editableComponente.codigo}
-                            onChange={handleChange}
-                            disabled={!isEditing}
-                        />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Nombre</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="nombre"
-                            value={editableComponente.nombre}
-                            onChange={handleChange}
-                            disabled={!isEditing}
-                        />
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label>Descripción</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            name="descripcion"
-                            value={editableComponente.descripcion}
-                            onChange={handleChange}
-                            disabled={!isEditing}
-                        />
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
+        <Dialog open={show} onClose={handleClose} fullWidth maxWidth="sm">
+            <DialogTitle>
+                {isEditing ? "Editar componente" : "Detalle del componente"}
+            </DialogTitle>
+            <DialogContent dividers>
+                <Stack spacing={2} sx={{ mt: 1 }}>
+                    <TextField
+                        label="Código"
+                        name="codigo"
+                        value={editableComponente.codigo}
+                        onChange={handleChange}
+                        fullWidth
+                        disabled={!isEditing}
+                    />
+                    <TextField
+                        label="Nombre"
+                        name="nombre"
+                        value={editableComponente.nombre}
+                        onChange={handleChange}
+                        fullWidth
+                        disabled={!isEditing}
+                    />
+                    <TextField
+                        label="Descripción"
+                        name="descripcion"
+                        value={editableComponente.descripcion}
+                        onChange={handleChange}
+                        fullWidth
+                        multiline
+                        rows={3}
+                        disabled={!isEditing}
+                    />
+                </Stack>
+            </DialogContent>
+            <DialogActions>
                 {isEditing ? (
                     <>
-                        <Button variant="secondary" onClick={cancelEdit}>Cancelar</Button>
-                        <Button variant="primary" onClick={handleSave}>Guardar</Button>
+                        <Button variant="outlined" color="secondary" onClick={cancelEdit}>
+                            Cancelar
+                        </Button>
+                        <Button variant="contained" color="primary" onClick={handleSave}>
+                            Guardar
+                        </Button>
                     </>
                 ) : (
-                    <Button variant="warning" onClick={toggleEdit}>Editar</Button>
+                    <Button variant="contained" color="warning" onClick={toggleEdit}>
+                        Editar
+                    </Button>
                 )}
-                <Button variant="outline-secondary" onClick={handleClose}>Cerrar</Button>
-            </Modal.Footer>
-        </Modal>
+                <Button variant="outlined" onClick={handleClose}>
+                    Cerrar
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 }
