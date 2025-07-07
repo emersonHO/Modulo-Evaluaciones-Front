@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import axios from "axios";
+import { useDispatch } from "react-redux";
 
 export default function ComponenteViewer({ show, handleClose, componente }) {
+    const dispatch = useDispatch();
     const [isEditing, setIsEditing] = useState(false);
     const [editableComponente, setEditableComponente] = useState(null);
 
@@ -25,11 +26,10 @@ export default function ComponenteViewer({ show, handleClose, componente }) {
     };
 
     const handleSave = () => {
-        axios.put(`http://localhost:8080/api/componente/${editableComponente.id}`, editableComponente)
+        dispatch(updateComponente(editableComponente))
             .then(() => {
                 setIsEditing(false);
                 handleClose();
-                window.location.reload();
             })
             .catch(err => {
                 console.error("Error al actualizar el componente:", err);
