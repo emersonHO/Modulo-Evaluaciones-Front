@@ -70,7 +70,7 @@ export const CompetenciasDialog = ({
               <TextField
                 {...params}
                 label="Buscar y seleccionar competencias"
-                placeholder="Escribe al menos 3 letras..."
+                placeholder="Escribe al menos 1 letra..."
                 helperText="Puedes buscar y seleccionar varias competencias"
               />
             )}
@@ -79,7 +79,7 @@ export const CompetenciasDialog = ({
                 <Chip
                   label={option.nombre}
                   {...getTagProps({ index })}
-                  key={option.id}
+                  key={`${option.id}-${index}-${option.nombre}`}
                 />
               ))
             }

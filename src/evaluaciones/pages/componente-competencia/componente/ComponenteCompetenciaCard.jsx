@@ -10,8 +10,11 @@ import {
   Menu,
   MenuItem,
   Stack,
+  Tooltip,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import AddIcon from "@mui/icons-material/Add";
+import SaveIcon from "@mui/icons-material/Save";
 import PropTypes from "prop-types";
 
 export function ComponenteCompetenciaCard({
@@ -19,12 +22,13 @@ export function ComponenteCompetenciaCard({
   onEdit,
   onDelete,
   onAddCompetencias,
+  onSave,
 }) {
   if (!componente) {
     return (
       <Box
         sx={{
-          p: 3,
+          p: 2,
           textAlign: "center",
           borderRadius: 2,
           bgcolor: "background.paper",
@@ -39,25 +43,50 @@ export function ComponenteCompetenciaCard({
   }
 
   return (
-    <Card elevation={2} sx={{ borderRadius: 2, height: "100%" }}>
-      <CardContent>
+    <Card
+      elevation={2}
+      sx={{
+        borderRadius: 2,
+        height: "auto",
+        minWidth: 260,
+        maxWidth: 340,
+        mx: "auto",
+        border: "2px solid rgba(0,0,0,0.15)",
+        boxShadow: "0 2px 8px 0 rgba(0,0,0,0.08)",
+        transition: "box-shadow 0.2s, background 0.2s, border 0.2s",
+        background: "#fff",
+        "&:hover": {
+          boxShadow: "0 4px 16px 0 rgba(0,0,0,0.18)",
+          border: "2.5px solid #222",
+          background: "#f7f7f7",
+        },
+      }}
+    >
+      <CardContent sx={{ p: 2 }}>
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
-            mb: 2,
+            mb: 1,
           }}
         >
           <Box>
-            <Typography variant="h6" color="primary" sx={{ mb: 0.5 }}>
+            <Typography
+              variant="subtitle1"
+              color="primary"
+              sx={{ mb: 0.5, fontWeight: 600 }}
+            >
               {componente.descripcion}
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
               <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
                 Peso:
               </Typography>
-              <Chip label={`${componente.peso || 0}%`} size="small" />
+              <Chip
+                label={`${componente.peso == null ? 0 : componente.peso}%`}
+                size="small"
+              />
             </Box>
           </Box>
           <MenuOpciones
@@ -65,7 +94,7 @@ export function ComponenteCompetenciaCard({
             onDelete={() => onDelete(componente.descripcion)}
           />
         </Box>
-        <Divider sx={{ my: 2 }} />
+        <Divider sx={{ my: 1 }} />
         <Typography variant="subtitle2" color="text.secondary" gutterBottom>
           Competencias asociadas:
         </Typography>
@@ -85,14 +114,28 @@ export function ComponenteCompetenciaCard({
             Sin competencias asociadas
           </Typography>
         )}
-        <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-          <Chip
-            label={"+ ASOCIAR"}
-            color="primary"
-            clickable
-            onClick={() => onAddCompetencias(componente)}
-            sx={{ fontWeight: 600, letterSpacing: 1 }}
-          />
+        <Box
+          sx={{ mt: 2, display: "flex", justifyContent: "flex-end", gap: 1 }}
+        >
+          <Tooltip title="Guardar">
+            <IconButton color="success" onClick={() => onSave(componente)}>
+              <SaveIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Agregar competencias">
+            <IconButton
+              color="primary"
+              onClick={() => onAddCompetencias(componente)}
+            >
+              <AddIcon />
+              <Typography
+                variant="button"
+                sx={{ ml: 0.5, fontWeight: 600, fontSize: 14 }}
+              >
+                Competencias
+              </Typography>
+            </IconButton>
+          </Tooltip>
         </Box>
       </CardContent>
     </Card>
@@ -149,6 +192,7 @@ ComponenteCompetenciaCard.propTypes = {
   onEdit: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onAddCompetencias: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
 };
 
 export default ComponenteCompetenciaCard;

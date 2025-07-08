@@ -1,47 +1,54 @@
-import { Modal, Button, Form } from 'react-bootstrap';
+import React from 'react';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField,
+    Stack
+} from '@mui/material';
 
 const AddComponente = ({ show, handleClose, handleSave, newComponente, handleChange }) => {
     return (
-        <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>Añadir nuevo componente</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group controlId="formCodigo">
-                        <Form.Label>Código</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="codigo"
-                            value={newComponente.codigo}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="formNombre">
-                        <Form.Label>Nombre</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="nombre"
-                            value={newComponente.nombre}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="formDescripcion">
-                        <Form.Label>Descripción</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            name="descripcion"
-                            value={newComponente.descripcion}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>Cancelar</Button>
-                <Button variant="primary" onClick={handleSave}>Guardar</Button>
-            </Modal.Footer>
-        </Modal>
+        <Dialog open={show} onClose={handleClose} fullWidth maxWidth="sm">
+            <DialogTitle>Añadir nuevo componente</DialogTitle>
+            <DialogContent dividers>
+                <Stack spacing={2} sx={{ mt: 1 }}>
+                    <TextField
+                        label="Código"
+                        name="codigo"
+                        value={newComponente.codigo}
+                        onChange={handleChange}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Nombre"
+                        name="nombre"
+                        value={newComponente.nombre}
+                        onChange={handleChange}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Descripción"
+                        name="descripcion"
+                        value={newComponente.descripcion}
+                        onChange={handleChange}
+                        fullWidth
+                        multiline
+                        rows={3}
+                    />
+                </Stack>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="outlined" onClick={handleClose} color="secondary">
+                    Cancelar
+                </Button>
+                <Button variant="contained" onClick={handleSave} color="primary">
+                    Guardar
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 };
 

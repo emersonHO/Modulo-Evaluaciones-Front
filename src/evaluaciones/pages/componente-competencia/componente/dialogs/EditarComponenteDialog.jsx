@@ -4,50 +4,39 @@ import {
   Box,
   Typography,
   Stack,
-  FormControl,
   TextField,
   Button,
   CircularProgress,
 } from "@mui/material";
 import { Zoom } from "@mui/material";
 import PropTypes from "prop-types";
-import { Autocomplete } from "@mui/lab";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export const EditarComponenteDialog = ({
   open,
   onClose,
   formData,
   setFormData,
-  componentesUnicos = [],
   onSave,
   editingComponente,
   isLoading,
 }) => {
-  const [inputValue, setInputValue] = useState("");
-  const [componentesValidos, setComponentesValidos] = useState([]);
-
   useEffect(() => {
-    console.log("Componentes recibidos:", componentesUnicos);
-    const validos = Array.isArray(componentesUnicos) ? componentesUnicos : [];
-    setComponentesValidos(validos);
-  }, [componentesUnicos]);
-
-  const handleInputChange = (event, newValue) => {
-    console.log("Input cambiado:", newValue);
-    setInputValue(newValue);
-  };
-
-  const handleChange = (event, newValue) => {
-    console.log("Valor seleccionado:", newValue);
-    if (newValue) {
-      setFormData((prev) => ({
-        ...prev,
-        id: newValue.id || "",
-        descripcion: newValue.descripcion || "",
-        peso: newValue.peso || "",
-      }));
+    if (editingComponente) {
+      setFormData({
+        id: editingComponente.id,
+        descripcion: editingComponente.descripcion,
+        peso: editingComponente.peso,
+      });
     }
+  }, [editingComponente, setFormData]);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
@@ -86,69 +75,25 @@ export const EditarComponenteDialog = ({
           </Box>
         ) : (
           <Stack spacing={3}>
-            <FormControl fullWidth>
-              <Autocomplete
-                options={componentesValidos}
-                getOptionLabel={(option) => option?.descripcion || ""}
-                filterOptions={(options, { inputValue }) => {
-                  const searchTerm = inputValue.toLowerCase().trim();
-                  if (!searchTerm) return options;
-                  return options.filter((option) =>
-                    option?.descripcion?.toLowerCase().includes(searchTerm)
-                  );
-                }}
-                value={
-                  componentesValidos.find(
-                    (c) => String(c?.id) === String(formData.id)
-                  ) || null
-                }
-                onChange={handleChange}
-                onInputChange={handleInputChange}
-                inputValue={inputValue}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Nombre del componente"
-                    variant="outlined"
-                    placeholder="Escribe para buscar componentes..."
-                  />
-                )}
-                noOptionsText="No se encontraron componentes"
-                loadingText="Cargando componentes..."
-                freeSolo={false}
-                autoComplete
-                includeInputInList
-                blurOnSelect
-                loading={isLoading}
-                disabled={isLoading}
-              />
-            </FormControl>
+            <TextField
+              fullWidth
+              label="Nombre del componente"
+              name="descripcion"
+              value={formData.descripcion}
+              onChange={handleChange}
+              variant="outlined"
+              placeholder="Ingrese el nombre del componente"
+            />
 
             <TextField
               fullWidth
               label="Peso del componente"
+              name="peso"
               type="number"
-              value={
-                formData.peso === null || formData.peso === undefined
-                  ? ""
-                  : formData.peso
-              }
-              InputProps={{
-                readOnly: !(
-                  formData.peso === null || formData.peso === undefined
-                ),
-              }}
-              onChange={
-                formData.peso === null || formData.peso === undefined
-                  ? (e) =>
-                      setFormData((prev) => ({ ...prev, peso: e.target.value }))
-                  : undefined
-              }
-              placeholder={
-                formData.peso === null || formData.peso === undefined
-                  ? "Ingrese el peso"
-                  : ""
-              }
+              value={formData.peso}
+              onChange={handleChange}
+              variant="outlined"
+              placeholder="Ingrese el peso del componente"
             />
 
             <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
@@ -183,13 +128,6 @@ EditarComponenteDialog.propTypes = {
     peso: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   }).isRequired,
   setFormData: PropTypes.func.isRequired,
-  componentesUnicos: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      descripcion: PropTypes.string,
-      peso: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    })
-  ),
   onSave: PropTypes.func.isRequired,
   editingComponente: PropTypes.object,
   isLoading: PropTypes.bool,

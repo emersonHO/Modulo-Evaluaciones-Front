@@ -8,7 +8,12 @@ export const useCompetencias = () => {
 
   const cargarCompetencias = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/competencias");
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:8080/api/competencias", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       setCompetenciasDisponibles(data);
       return {
