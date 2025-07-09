@@ -14,14 +14,15 @@ const palette = [
 function usePesoColorMap(arbol) {
   return useMemo(() => {
     if (!arbol || !arbol[0] || !arbol[0].children) return {};
+
     function recolectarPesos(nodos, set = new Set()) {
       nodos.forEach(n => {
-        const match = n.name.match(/Peso: (\d+)/);
-        if (match) set.add(parseInt(match[1], 10));
+        if (typeof n.peso === "number") set.add(n.peso);
         if (n.children) recolectarPesos(n.children, set);
       });
       return set;
     }
+
     const pesos = Array.from(recolectarPesos(arbol));
     const uniquePesos = pesos.sort((a, b) => b - a);
     const map = {};
@@ -36,22 +37,37 @@ function usePesoColorMap(arbol) {
 function transformarArbol(data) {
   if (!data || !data.componentes || data.componentes.length === 0) return [];
 
-  function mapComponentes(componentes) {
-    if (!componentes || componentes.length === 0) return [];
-    // Ordena por peso descendente
-    const ordenados = [...componentes].sort((a, b) => b.peso - a.peso);
-    return ordenados.map(comp => ({
-      name: `${comp.descripcion} (Peso: ${comp.peso})`,
-      ...(comp.hijos && comp.hijos.length > 0
-        ? { children: mapComponentes(comp.hijos) }
-        : {})
+  // Agrupar componentes por peso
+  const porPeso = {};
+  data.componentes.forEach(comp => {
+    if (!porPeso[comp.peso]) porPeso[comp.peso] = [];
+    porPeso[comp.peso].push(comp);
+  });
+
+  // Ordenar pesos de mayor a menor
+  const pesosOrdenados = Object.keys(porPeso)
+    .map(p => parseInt(p))
+    .sort((a, b) => b - a);
+
+  // Crear nodos por nivel
+  const niveles = pesosOrdenados.map(peso => {
+    return porPeso[peso].map(comp => ({
+      name: comp.descripcion,
+      peso: comp.peso,
     }));
+  });
+
+  // Conectar jerárquicamente
+  for (let i = 0; i < niveles.length - 1; i++) {
+    const padre = niveles[i][0];
+    if (!padre.children) padre.children = [];
+    padre.children = padre.children.concat(niveles[i + 1]);
   }
 
   return [
     {
       name: data.nombre,
-      children: mapComponentes(data.componentes)
+      children: niveles.length > 0 ? niveles[0] : [],
     }
   ];
 }
@@ -84,23 +100,44 @@ export default function VisualizarArbol() {
 
   const pesoColorMap = usePesoColorMap(arbol);
 
-  function renderCustomNode({ nodeDatum, hierarchyPointNode }) {
-    const isRoot = hierarchyPointNode.depth === 0;
-    let color = "#2196f3"; // Azul para la raíz
-    if (!isRoot) {
-      const pesoMatch = nodeDatum.name.match(/Peso: (\d+)/);
-      const peso = pesoMatch ? parseInt(pesoMatch[1], 10) : null;
-      color = peso !== null && pesoColorMap[peso] ? pesoColorMap[peso] : "#f44336";
-    }
-    return (
-      <g>
-        <circle r={20} fill={color} />
-        <text fill="black" strokeWidth="1" x="25" y="5">
-          {nodeDatum.name}
-        </text>
-      </g>
-    );
+function renderCustomNode({ nodeDatum, hierarchyPointNode }) {
+  const isRoot = hierarchyPointNode.depth === 0;
+  const peso = nodeDatum.peso ?? null;
+
+  let color = "#000000"; // color por defecto
+  if (!isRoot && peso !== null && pesoColorMap[peso]) {
+    color = pesoColorMap[peso];
   }
+
+  return (
+    <g>
+      <circle r={30} fill={color} stroke="#333" strokeWidth={1} />
+      <text
+        textAnchor="middle"
+        y={-60}
+        fontSize="14"
+        fill="#000"
+        fontFamily="sans-serif"
+      >
+        {nodeDatum.name}
+      </text>
+
+      {/* Peso */}
+      {peso !== null && (
+        <text
+          textAnchor="middle"
+          y={-40}
+          fontSize="12"
+          fill="#444"
+          fontFamily="sans-serif"
+        >
+          Peso: {peso}
+        </text>
+      )}
+    </g>
+  );
+}
+
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f6fa" }}>
@@ -172,10 +209,11 @@ export default function VisualizarArbol() {
               data={arbol}
               orientation="vertical"
               renderCustomNodeElement={renderCustomNode}
-              separation={{ siblings: 2, nonSiblings: 2 }}
+              nodeSize={{ x: 350, y: 180 }} // Separación mejorada
               zoomable
               collapsible
-              translate={{ x: window.innerWidth * 0.45, y: 60 }}
+              translate={{ x: window.innerWidth * 0.5, y: 100 }}
+              zoom={1.2} // Acerca el árbol para que sea legible
             />
           </div>
         ) : competenciaId && !loading ? (
