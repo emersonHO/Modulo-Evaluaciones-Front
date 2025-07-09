@@ -67,7 +67,7 @@ export default function MainEval() {
         {
             title: "Dashboard árbol de competencias",
             description: "Visualiza y explora el árbol interactivo de competencias y sus componentes",
-            route: "/evaluaciones/arbolcompetencias"
+            route: "/evaluaciones/arboldashboard"
         }
     ];
 

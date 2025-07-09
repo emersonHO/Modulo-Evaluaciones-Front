@@ -5,16 +5,16 @@ export const arbolSlice = createSlice({
     initialState: {
         status: '',
         arbolidActiva: null,
-        arboles: [],
-        estaCargandoArboles: false,
+        arbole: [],
+        estaCargandoArbol: false,
     },
     reducers: {
-        iniciaCargaArboles: (state) => {
-            state.estaCargandoArboles = true;
+        iniciaCargaArbol: (state) => {
+            state.estaCargandoArbol = true;
         },
-        cargaArboles: ( state, action ) => {
-            state.arboles = action.payload.arboles;
-            state.estaCargandoArboles = false;
+        cargaArbol: ( state, action ) => {
+            state.arbole = action.payload.arboles;
+            state.estaCargandoArbol = false;
         },
         cargaArbolIdActiva: ( state, action ) => {
             state.arbolidActiva = action.payload.arbolidActivo;
@@ -22,4 +22,4 @@ export const arbolSlice = createSlice({
     }
 });
 
-export const { iniciaCargaArboles, cargaArboles, cargaArbolIdActiva } = arbolSlice.actions;
+export const { iniciaCargaArbol, cargaArbol, cargaArbolIdActiva } = arbolSlice.actions;
