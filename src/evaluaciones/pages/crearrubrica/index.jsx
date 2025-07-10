@@ -26,8 +26,12 @@ export default function CrearRubrica(){
             descripcion: rubricaInfo.descripcion,
             estado: rubricaInfo.estado,
             criterios: rubricaInfo.criterios,
+            componenteid: rubricaInfo.componenteId,
+            cursoid: rubricaInfo.cursoId 
         };
         dispatch(postRubrica(rubricaData));
+        console.log(rubricaInfo)
+        console.log(rubricaData)
     };
 
     return(

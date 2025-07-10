@@ -61,6 +61,14 @@ export default function MainEval() {
         }
     ];
 
+    const dashboardCards = [
+        {
+            title: "Dashboard árbol de competencias",
+            description: "Visualiza y explora el árbol interactivo de competencias y sus componentes",
+            route: "/evaluaciones/arboldashboard"
+        }
+    ];
+
     return (
         <main>
             <button onClick={() => navigate("/")}>Ir a inicio</button>
@@ -90,6 +98,27 @@ export default function MainEval() {
                             route={card.route}
                         />
                     ))}
+                </div>
+            </div>
+
+            <div className="formula-general-container m-2">
+                <h3>Menú de dashboards</h3>
+                <div className="dashboard-cards"
+                    style={{ 
+                        display: "flex",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                        gap: 16
+                    }}
+                >       
+                {dashboardCards.map((card, index) => (
+                    <EvalCard
+                        key={`dashboard-${index}`}
+                        title={card.title}
+                        description={card.description}
+                        route={card.route}
+                    />
+                ))}
                 </div>
             </div>
         </main>

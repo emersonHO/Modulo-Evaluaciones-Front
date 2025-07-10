@@ -1,7 +1,7 @@
 import { iniciaCargaFormulas, cargaFormulas, cargaFormulaIdActiva } from "../slices/formulaSlice";
 import { iniciaCargaFunciones, cargaFunciones, cargaFuncionIdActiva } from "../slices/funcionSlice";
 import { iniciaGuardadoRubrica, guardadoRubricaExitoso, guardadoRubricaError } from "../slices/rubricaSlice";
-
+import { iniciaCargaComponentes, cargaComponentes } from "../slices/componenteSlice";
 
 
 export const getFormulas = () => {
@@ -150,20 +150,27 @@ export const postRubrica = (rubricaData) => {
 };
 
 export const getComponentes = () => {
-  return async () => {
+  return async (dispatch) => {
     const token = localStorage.getItem("token");
-    const resp = await fetch("http://localhost:8080/componentes", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await resp.json();
-    return { payload: data };
+    dispatch(iniciaCargaComponentes());
+    try {
+      const resp = await fetch("http://localhost:8080/api/componentes", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await resp.json();
+      dispatch(cargaComponentes({ componentes: data }));
+    } catch (error) {
+      console.error("Error al cargar componentes:", error);
+    }
   };
 };
 
 export const updateComponente = (componente) => {
   return async () => {
     const token = localStorage.getItem("token");
-    await fetch(`http://localhost:8080/componentes/${componente.id}`, {
+    await fetch(`http://localhost:8080/api/componentes/${componente.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -177,7 +184,7 @@ export const updateComponente = (componente) => {
 export const postComponente = (nuevoComponente) => {
   return async () => {
     const token = localStorage.getItem("token");
-    await fetch("http://localhost:8080/componentes", {
+    await fetch("http://localhost:8080/api/componentes", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -187,3 +194,23 @@ export const postComponente = (nuevoComponente) => {
     });
   };
 };
+
+
+export const getArbol = () => {
+
+    return async(dispatch, getState) => {
+        const token= localStorage.getItem("token")
+        console.log("TOKEN actual: ", token)
+        dispatch( iniciaCargaArbol() );
+        const resp = await fetch(`http://localhost:8080/api/competencias/{competenciaId}/arbol-componentes`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        const data = await resp.json();
+        
+        console.log( data );
+        dispatch( cargaArbol( { formulas: data } ) );
+    }
+}

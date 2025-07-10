@@ -7,6 +7,7 @@ import Formulas from "../pages/formulas";
 import AsignarFormula from "../pages/asignarformula";
 import ComponentePage from "../pages/grupocomponente"; 
 import CrearRubrica from "../pages/crearrubrica"
+import ArbolCompetenciaPage from "../pages/arboldashboard";
 
 import MainEval from "../pages/EvalHome";
 
@@ -24,6 +25,7 @@ export const EvaluacionesRoutes = () => {
       <Route path="componentes" element={<ComponentePage />} /> 
       <Route path="/" element={<MainEval/>}/>
       <Route path="crearrubrica" element={<CrearRubrica/>}/>
+      <Route path="arboldashboard" element={<ArbolCompetenciaPage />} />
     </Routes>
   );
 };
