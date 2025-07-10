@@ -70,7 +70,7 @@ export default function MainEval() {
     ];
 
     return (
-        <main>
+        <main className="main-eval-wrapper">
             <button onClick={() => navigate("/")}>Ir a inicio</button>
 
             <div className="formula-general-container m-2">
