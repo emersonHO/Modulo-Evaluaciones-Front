@@ -40,6 +40,11 @@ export default function MainEval() {
             title: "Asignar componentes con competencia",
             description: "Relacionar y/o editar componentes con competencias",
             route: "/evaluaciones/componente"
+        },
+        {
+            title: "Ver componentes",
+            description: "Crear nuevos componente o editar los que ya existen",
+            route: "/evaluaciones/grupocomponente"
         }
     ];
 
@@ -48,11 +53,6 @@ export default function MainEval() {
             title: "Crear rúbricas para componentes",
             description: "Creación de una rúbrica y sus criterios para los componentes asociados",
             route: "/evaluaciones/crearrubrica"
-        },
-        {
-            title: "TODO",
-            description: "Relacionar y/o editar las fórmulas a utilizar para los componentes",
-            route: "/evaluaciones/asignarformula"
         },
         {
             title: "TODO",

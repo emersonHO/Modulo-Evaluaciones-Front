@@ -1,7 +1,7 @@
 import { iniciaCargaFormulas, cargaFormulas, cargaFormulaIdActiva } from "../slices/formulaSlice";
 import { iniciaCargaFunciones, cargaFunciones, cargaFuncionIdActiva } from "../slices/funcionSlice";
 import { iniciaGuardadoRubrica, guardadoRubricaExitoso, guardadoRubricaError } from "../slices/rubricaSlice";
-import { iniciaCargaComponentes, cargaComponentes } from "../slices/componenteSlice";
+
 
 
 export const getFormulas = () => {

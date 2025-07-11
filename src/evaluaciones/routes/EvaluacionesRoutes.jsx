@@ -23,6 +23,7 @@ export const EvaluacionesRoutes = () => {
       <Route path='formulas' element={<Formulas/>}/>
       <Route path="asignarformula" element={<AsignarFormula/>}/>
       <Route path="componentes" element={<ComponentePage />} /> 
+      <Route path="grupocomponente" element={<ComponentePage />} />
       <Route path="/" element={<MainEval/>}/>
       <Route path="crearrubrica" element={<CrearRubrica/>}/>
       <Route path="arboldashboard" element={<ArbolCompetenciaPage />} />
