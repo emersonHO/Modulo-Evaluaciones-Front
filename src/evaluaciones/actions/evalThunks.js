@@ -2,6 +2,7 @@ import { iniciaCargaFormulas, cargaFormulas, cargaFormulaIdActiva } from "../sli
 import { iniciaCargaFunciones, cargaFunciones, cargaFuncionIdActiva } from "../slices/funcionSlice";
 import { iniciaGuardadoRubrica, guardadoRubricaExitoso, guardadoRubricaError } from "../slices/rubricaSlice";
 import { iniciaCargaComponentes, cargaComponentes } from "../slices/componenteSlice";
+import { iniciaCargaRubricas, cargaRubricasExitoso, errorCargaRubricas, seleccionaRubrica } from "../slices/rubricaSlice";
 
 
 export const getFormulas = () => {
@@ -214,3 +215,32 @@ export const getArbol = () => {
         dispatch( cargaArbol( { formulas: data } ) );
     }
 }
+
+export const getRubricas = () => {
+  return async (dispatch) => {
+    dispatch(iniciaCargaRubricas());
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch("http://localhost:8080/api/rubricas", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      dispatch(cargaRubricasExitoso(data));
+    } catch (error) {
+      console.error("Error cargando rúbricas:", error);
+      dispatch(errorCargaRubricas(error.message));
+    }
+  };
+};
+
+export const seleccionarRubricaPorId = (id) => {
+  return (dispatch, getState) => {
+    const { rubricas } = getState().rubrica;
+    const seleccionada = rubricas.find((r) => r.id === id);
+    dispatch(seleccionaRubrica(seleccionada || null));
+  };
+};

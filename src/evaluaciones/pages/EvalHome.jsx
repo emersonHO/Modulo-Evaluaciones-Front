@@ -50,9 +50,9 @@ export default function MainEval() {
             route: "/evaluaciones/crearrubrica"
         },
         {
-            title: "TODO",
+            title: "Ver rúbricas",
             description: "Relacionar y/o editar las fórmulas a utilizar para los componentes",
-            route: "/evaluaciones/asignarformula"
+            route: "/evaluaciones/visualizarrubrica"
         },
         {
             title: "TODO",
